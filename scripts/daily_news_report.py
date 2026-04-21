@@ -38,15 +38,10 @@ def translate_to_chinese(text):
 import urllib.parse
 
 # ========== 新聞分類RSS ==========
-LTN_CATEGORIES = {
+RSS_SOURCES = {
     '🌏 國際': 'https://feeds.bbci.co.uk/news/world/rss.xml',
+    '🌍 全球': 'https://www.france24.com/en/rss',
     '📈 財經': 'https://feeds.bbci.co.uk/news/business/rss.xml',
-    '🏛️ 政治': 'https://tw.news.yahoo.com/rss/politics',
-    '🏠 社會': 'https://tw.news.yahoo.com/rss/society',
-    '⚽ 體育': 'https://tw.news.yahoo.com/rss/sports',
-    '🎬 娛樂': 'https://tw.news.yahoo.com/rss/entertainment',
-    '🏘️ 地方': 'https://tw.news.yahoo.com/rss/local',
-    '🎨 生活': 'https://tw.news.yahoo.com/rss/life',
 }
 
 # ========== 工具函數 ==========
@@ -107,8 +102,8 @@ def fetch_category(category_name, url, count=5):
                         title_text = title_text[:-3]
                     title_text = re.sub(r'<[^>]+>', '', title_text)
                     if title_text and len(title_text) > 5:
-                        # BBC 來源需要翻譯成中文
-                        if 'bbci.co.uk' in url:
+                        # BBC / France24 來源需要翻譯成中文
+                        if 'bbci.co.uk' in url or 'france24.com' in url:
                             title_text = translate_to_chinese(title_text)
                         news_list.append(title_text)
     except:
@@ -120,7 +115,7 @@ def fetch_all_news():
     """抓取所有分類新聞"""
     all_news = {}
     
-    for category, url in LTN_CATEGORIES.items():
+    for category, url in RSS_SOURCES.items():
         news = fetch_category(category, url, 5)
         all_news[category] = news
     
@@ -167,7 +162,7 @@ def generate_report():
     # ===== 各分類內容 ======
     section_num = 1
     
-    for emoji, url in LTN_CATEGORIES.items():
+    for emoji, url in RSS_SOURCES.items():
         news_list = all_news.get(emoji, [])
         
         h = doc.add_heading(f'{section_num}、{emoji}', level=1)
@@ -205,7 +200,7 @@ def send_to_telegram(file_path):
     today = datetime.datetime.now()
     
     # 動態生成分類列表
-    cats = ' · '.join([emoji for emoji, _ in LTN_CATEGORIES.items()])
+    cats = ' · '.join([emoji for emoji, _ in RSS_SOURCES.items()])
     
     caption = f"📰 全方位新聞快報_{today.strftime('%Y年%m月%d日 %H:%M')}\n\n多元新聞來源\n\n{cats}\n\n小安製"
 

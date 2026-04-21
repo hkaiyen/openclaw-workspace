@@ -68,6 +68,37 @@ def get_finnhub_quote(symbol):
     except:
         return None
 
+# ========== 資料驗證 ==========
+def validate_data():
+    """驗證所有數據來源是否正常，確保報告內容完整"""
+    errors = []
+    warnings = []
+    
+    # 檢查 Finnhub（美股）
+    us_symbols = ['SPY', 'QQQ', 'DIA', 'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'NVDA', 'TSLA']
+    us_ok = 0
+    for sym in us_symbols:
+        q = get_finnhub_quote(sym)
+        if q and q.get('c', 0) > 0:
+            us_ok += 1
+    if us_ok < 3:
+        errors.append(f'美股數據異常（僅 {us_ok}/{len(us_symbols)} 筆）')
+    elif us_ok < len(us_symbols):
+        warnings.append(f'美股部分數據缺失（{us_ok}/{len(us_symbols)} 筆）')
+    
+    # 檢查台股 TWSE
+    twse_date = datetime.datetime.now().strftime('%Y%m%d')
+    tw_stocks = ['0050', '0056', '2330']
+    tw_ok = 0
+    for stock in tw_stocks:
+        data = get_twse_data(stock, twse_date)
+        if data:
+            tw_ok += 1
+    if tw_ok < 3:
+        warnings.append(f'台股部分數據缺失（{tw_ok}/{len(tw_stocks)} 筆）')
+    
+    return errors, warnings
+
 # ========== TWSE ==========
 
 def get_twse_data(stock_no, date_str):
@@ -369,8 +400,25 @@ def send_to_telegram(file_path):
 if __name__ == '__main__':
     print(f'[{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}] 開始生成市場統計報表...')
     try:
+        # Step 1: 驗證數據
+        print('🔍 驗證數據來源...')
+        errors, warnings = validate_data()
+        
+        if errors:
+            print(f'❌ 數據驗證失敗：{"；".join(errors)}')
+            print('❌ 任務中止，報告不發送')
+            exit(1)
+        
+        if warnings:
+            print(f'⚠️ 警告：{"；".join(warnings)}')
+        else:
+            print('✅ 所有數據來源正常')
+        
+        # Step 2: 生成報告
         report_path = generate_report()
         print(f'📄 報告已生成: {report_path}')
+        
+        # Step 3: 發送 Telegram
         if send_to_telegram(report_path):
             print('✅ 已發送到 Telegram')
         else:

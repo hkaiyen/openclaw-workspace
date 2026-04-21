@@ -23,6 +23,7 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
+import yfinance
 
 # ========== iCloud CalDAV 設定 ==========
 ICLOUD_USER = 'Hkaiyen@icloud.com'
@@ -103,6 +104,36 @@ def get_weather():
     except Exception as e:
         print(f"天氣取得失敗: {e}")
         return None
+
+# ========== 股票報價（yfinance）==========
+def get_stock_prices():
+    """取得主要股票報價（yfinance）"""
+    stocks = {
+        'TSM': {'name': '台積電 ADR', 'symbol': 'TSM'},
+        'NVDA': {'name': '輝達', 'symbol': 'NVDA'},
+        'AAPL': {'name': '蘋果', 'symbol': 'AAPL'},
+        'MSFT': {'name': '微軟', 'symbol': 'MSFT'},
+        'GOOGL': {'name': 'Google', 'symbol': 'GOOGL'},
+    }
+    prices = {}
+    for key, info in stocks.items():
+        try:
+            ticker = yfinance.Ticker(info['symbol'])
+            hist = ticker.history(period='2d')
+            if not hist.empty:
+                current = hist['Close'].iloc[-1]
+                prev = hist['Close'].iloc[-2] if len(hist) > 1 else current
+                change = current - prev
+                pct = (change / prev * 100) if prev > 0 else 0
+                prices[key] = {
+                    'name': info['name'],
+                    'price': round(current, 2),
+                    'change': round(change, 2),
+                    'pct': round(pct, 2),
+                }
+        except Exception as e:
+            print(f"股票取得失敗 {key}: {e}")
+    return prices
 
 # ========== 2. 行事曆（iCloud CalDAV）==========
 def get_calendar_events():
@@ -412,7 +443,7 @@ def main():
     if weather_data:
         print(f"   ✅ 天氣取得成功")
 
-    # 2. 行事曆 + 待辦
+    # 2. 行事曆
     print("\n📅 取得行事曆...")
     events = get_calendar_events()
     print(f"   ✅ 找到 {len(events)} 個行程")
