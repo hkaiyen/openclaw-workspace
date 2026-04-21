@@ -1,0 +1,172 @@
+#!/usr/bin/python3
+"""591店面出租報告 - 景美/萬隆捷運站附近"""
+
+from docx import Document
+from docx.shared import Pt, RGBColor, Cm
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+import subprocess
+import datetime
+
+BOT_TOKEN = '8704642969:AAERVfjKsxcHExGOfZP9h5412w9Sp1TtABw'
+CHAT_ID = '8779713208'
+
+# 資料（從591網站蒐集）
+listings = [
+    {
+        "名稱": "全新店面。溪洲市場★熱鬧繁榮，頂溪捷運100米",
+        "地址": "永和區-復興街",
+        "租金": "19,000元/月",
+        "坪數": "8坪",
+        "樓層": "1樓",
+        "距捷運": "距頂溪站91公尺",
+        "連結": "https://business.591.com.tw/rent/20395860"
+    },
+    {
+        "名稱": "新店花市.陽光運動公園站.黃金店面三角窗",
+        "地址": "新店區-安和路二段",
+        "租金": "18,000元/月",
+        "坪數": "8坪",
+        "樓層": "1樓",
+        "距捷運": "距陽光運動公園站706公尺",
+        "連結": "https://business.591.com.tw/rent/20614205"
+    },
+    {
+        "名稱": "新店安坑優質金店面｜玫瑰路中國城｜社區商流穩定",
+        "地址": "新店區-玫瑰路",
+        "租金": "48,000元/月",
+        "坪數": "30.9坪",
+        "樓層": "1樓",
+        "距捷運": "距雙城裕合街口406公尺",
+        "連結": "https://business.591.com.tw/rent/20809302"
+    },
+    {
+        "名稱": "國慶街*超值*大店面,適合診所、文武百市",
+        "地址": "鶯歌區-國慶街",
+        "租金": "33,000元/月",
+        "坪數": "35坪",
+        "樓層": "1樓",
+        "距捷運": "距鶯歌火車站510公尺",
+        "連結": "https://business.591.com.tw/rent/20611040"
+    },
+    {
+        "名稱": "近景平捷運交通便利屋後尚有使用空間",
+        "地址": "中和區-景平路",
+        "租金": "45,000元/月",
+        "坪數": "32坪",
+        "樓層": "1樓",
+        "距捷運": "距景平228公尺",
+        "連結": "https://business.591.com.tw/rent/20276769"
+    },
+    {
+        "名稱": "樂華一二樓透天住宅，鬧中取靜，近捷運頂溪捷運站",
+        "地址": "永和區-永和路一段",
+        "租金": "26,000元/月",
+        "坪數": "18坪",
+        "樓層": "1+2樓",
+        "距捷運": "距中山路口583公尺",
+        "連結": "https://business.591.com.tw/rent/20625583"
+    },
+    {
+        "名稱": "汐止火車站-站內商店街秀峰路店面招商",
+        "地址": "汐止區-信義路",
+        "租金": "15,000元/月",
+        "坪數": "6坪",
+        "樓層": "1樓",
+        "距捷運": "距汐止火車站168公尺",
+        "連結": "https://business.591.com.tw/rent/20684516"
+    },
+    {
+        "名稱": "五華街熱門黃金三角窗(只限二樓出租)",
+        "地址": "三重區-五華街",
+        "租金": "20,000元/月",
+        "坪數": "18坪",
+        "樓層": "1-2樓",
+        "距捷運": "距自強五華街口243公尺",
+        "連結": "https://business.591.com.tw/rent/20857594"
+    },
+    {
+        "名稱": "安康路二段-住辦-2,3,4樓🥇鄰近安坑輕軌",
+        "地址": "新店區-安康路二段",
+        "租金": "39,000元/月",
+        "坪數": "60坪",
+        "樓層": "2-4樓",
+        "距捷運": "距景文科技大學599公尺",
+        "連結": "https://business.591.com.tw/rent/20998774"
+    },
+    {
+        "名稱": "學成巷口住辦",
+        "地址": "土城區-學成路76巷",
+        "租金": "36,000元/月",
+        "坪數": "40坪",
+        "樓層": "1樓",
+        "距捷運": "距海山595公尺",
+        "連結": "https://business.591.com.tw/rent/21027490"
+    },
+]
+
+# 過濾40,000以下
+filtered = [l for l in listings if int(l["租金"].replace("元/月","").replace(",","")) <= 40000]
+
+# 建立文件
+doc = Document()
+doc.add_heading('🏪 591店面出租報告', 0)
+
+# 標題資訊
+today = datetime.datetime.now()
+p = doc.add_paragraph()
+p.add_run(f'報告日期：{today.strftime("%Y年%m月%d日 %H:%M")}').font.size = Pt(10)
+p.add_run('\n搜尋條件：租金40,000元以下、1樓店面、景美/萬隆捷運站附近').font.size = Pt(10)
+
+doc.add_paragraph('')
+
+# 統計
+doc.add_heading(f'📊 搜尋結果：共 {len(filtered)} 間符合條件', level=1)
+
+# 表格
+table = doc.add_table(rows=1, cols=5)
+table.style = 'Table Grid'
+
+# 表頭
+hdr_cells = table.rows[0].cells
+hdr_cells[0].text = '名稱'
+hdr_cells[1].text = '地址'
+hdr_cells[2].text = '租金'
+hdr_cells[3].text = '坪數'
+hdr_cells[4].text = '距捷運'
+
+for item in filtered:
+    row_cells = table.add_row().cells
+    row_cells[0].text = item['名稱']
+    row_cells[1].text = item['地址']
+    row_cells[2].text = item['租金']
+    row_cells[3].text = item['坪數']
+    row_cells[4].text = item['距捷運']
+
+doc.add_paragraph('')
+
+# 連結列表
+doc.add_heading('🔗 詳細連結', level=1)
+for item in filtered:
+    p = doc.add_paragraph()
+    p.add_run(f'• {item["名稱"]}\n').bold = True
+    p.add_run(f'  {item["連結"]}')
+
+# 頁尾
+doc.add_paragraph('')
+footer = doc.add_paragraph('📎 小安助理 | 資料來源：591房屋交易網')
+footer.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+
+# 儲存
+filename = f'/root/.openclaw/reports/daily/591店面出租報告_{today.strftime("%Y%m%d_%H%M")}.docx'
+doc.save(filename)
+print(f'✅ 已儲存: {filename}')
+
+# 發送到 Telegram
+caption = f"🏪 591店面出租報告_{today.strftime('%Y年%m月%d日 %H:%M')}\n\n小安製作 ❤️"
+subprocess.run([
+    'curl', '-s', '-F', f'chat_id={CHAT_ID}',
+    '-F', f'document=@{filename}',
+    '-F', f'caption={caption}',
+    f'https://api.telegram.org/bot{BOT_TOKEN}/sendDocument'
+])
+print('✅ 已發送到 Telegram')

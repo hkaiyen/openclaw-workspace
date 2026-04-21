@@ -1,0 +1,177 @@
+#!/usr/bin/env python3
+"""簡單版 Multi-Agent 研究報告系統 - 設計說明文件"""
+
+from docx import Document
+from docx.shared import Pt, RGBColor, Cm
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.table import WD_TABLE_ALIGNMENT
+import datetime
+
+doc = Document()
+
+now = datetime.datetime.now()
+
+# 標題
+title = doc.add_heading('🤖 簡單版 Multi-Agent 研究報告系統', 0)
+title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+# 日期
+p = doc.add_paragraph()
+date_str = now.strftime('%Y年%m月%d日 %H:%M')
+p.add_run('報告日期：' + date_str)
+p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+doc.add_paragraph('')
+
+# ========== 系統架構 ==========
+doc.add_heading('📋 系統架構圖', level=1)
+
+arch = """┌─────────────────────────────────────────────────────────────────────┐
+│                        研究報告產生器                                 │
+│                                                                      │
+│  ┌───────────┐    ┌───────────┐    ┌───────────┐                    │
+│  │ 市場趨勢  │    │  輿情分析 │    │ 競爭對手  │                    │
+│  │   Agent   │    │   Agent   │    │   Agent   │                    │
+│  │  研究腳本 │    │  研究腳本 │    │  研究腳本 │                    │
+│  └─────┬─────┘    └─────┬─────┘    └─────┬─────┘                    │
+│        │               │               │                           │
+│        ▼               ▼               ▼                           │
+│  ┌──────────────────────────────────────────────┐                   │
+│  │              研究協調腳本                      │                   │
+│  │         (research_coordinator.py)            │                   │
+│  └──────────────────────┬───────────────────────┘                   │
+│                         │                                           │
+│                         ▼                                           │
+│              ┌─────────────────────┐                                │
+│              │   發送到 Telegram   │                                │
+│              └─────────────────────┘                                │
+└─────────────────────────────────────────────────────────────────────┘"""
+doc.add_paragraph(arch)
+
+# ========== 檔案結構 ==========
+doc.add_heading('📁 檔案結構', level=1)
+
+lines = [
+    '• research_coordinator.py - 主協調腳本（心臟）',
+    '• agents/market_trends_agent.py - 市場趨勢代理',
+    '• agents/social_analysis_agent.py - 輿情分析代理',
+    '• agents/competitor_agent.py - 競爭對手代理',
+    '• data/market_trends/ - 市場趨勢資料庫',
+    '• data/social_data/ - 輿情資料庫',
+    '• data/competitors/ - 競爭對手資料庫',
+]
+for line in lines:
+    doc.add_paragraph(line)
+
+doc.add_paragraph('')
+
+# ========== 研究流程 ==========
+doc.add_heading('🔄 研究流程（每日排程）', level=1)
+
+doc.add_paragraph('執行命令：python3 research_coordinator.py')
+doc.add_paragraph('')
+
+steps = [
+    ('步驟1', '執行市場趨勢代理', '蒐集AI/科技新創趨勢 → 存入資料庫 → 回傳完成'),
+    ('步驟2', '執行輿情分析代理', '分析PTT/Dcard論壇討論 → 存入資料庫 → 回傳完成'),
+    ('步驟3', '執行競爭對手代理', '追蹤591/創業平台動態 → 存入資料庫 → 回傳完成'),
+    ('步驟4', '整合所有資料', '讀取JSON資料 → 生成Word報告'),
+    ('步驟5', '發送通知', '📱 老闆收到研究報告'),
+]
+
+for step, title, desc in steps:
+    p = doc.add_paragraph()
+    p.add_run(step + '：' + title).bold = True
+    p.add_run(' - ' + desc)
+
+doc.add_paragraph('')
+
+# ========== 研究內容 ==========
+doc.add_heading('📊 研究內容細節', level=1)
+
+doc.add_heading('代理1：市場趨勢代理', level=2)
+doc.add_paragraph('• AI/科技產業動態 - TechCrunch, 數位時代')
+doc.add_paragraph('• 新創趨勢 - 創業小聚, 數位時代')
+doc.add_paragraph('• 政策方向 - 政府公開資料')
+doc.add_paragraph('• 投資動向 - 風傳媒, CNBC')
+
+doc.add_paragraph('')
+
+doc.add_heading('代理2：輿情分析代理', level=2)
+doc.add_paragraph('• 網路討論熱度 - PTT, Dcard, Mobile01')
+doc.add_paragraph('• 消費者需求 - 論壇抱怨/需求文')
+doc.add_paragraph('• 趨勢話題 - Google Trend, 社群熱度')
+
+doc.add_paragraph('')
+
+doc.add_heading('代理3：競爭對手代理', level=2)
+doc.add_paragraph('• 類似服務定價 - 各競爭網站')
+doc.add_paragraph('• 市場佔有率 - 行業報告')
+doc.add_paragraph('• 新進者動態 - 591, 創業平台')
+
+doc.add_paragraph('')
+
+# ========== 每日排程 ==========
+doc.add_heading('⏰ 每日排程', level=1)
+
+schedule = [
+    ('08:00', '協調腳本啟動'),
+    ('08:00-08:30', '市場趨勢代理'),
+    ('08:30-09:00', '輿情分析代理'),
+    ('09:00-09:30', '競爭對手代理'),
+    ('09:30-10:00', '報告生成'),
+    ('10:00', '發送到Telegram'),
+]
+for time, content in schedule:
+    doc.add_paragraph('• ' + time + ' - ' + content)
+
+doc.add_paragraph('')
+
+# ========== 研究報告大綱 ==========
+doc.add_heading('📝 研究報告大綱', level=1)
+
+doc.add_paragraph("""一、市場趨勢摘要
+   • AI與科技產業動態
+   • 新興創業趨勢
+   • 政策與投資方向
+
+二、輿情分析
+   • 網路討論熱點
+   • 消費者需求趨勢
+   • 話題熱度分析
+
+三、競爭環境
+   • 市場概況
+   • 競爭者動態
+   • 機會與威脅
+
+四、創意切入點建議
+   • 可發展方向
+   • 差異化建議
+
+五、下週研究重點""")
+
+doc.add_paragraph('')
+
+# ========== 優點 ==========
+doc.add_heading('✅ 優點', level=1)
+
+advantages = [
+    '簡單好維護 - 每個代理獨立運作',
+    '擴展性強 - 未來可以升級成完整Multi-Agent',
+    '責任清晰 - 每個腳本專注自己的任務',
+    '容易除錯 - 問題容易被發現和修復',
+]
+for adv in advantages:
+    doc.add_paragraph('• ' + adv)
+
+doc.add_paragraph('')
+
+# 頁尾
+footer = doc.add_paragraph('📎 小安助理 | OpenClaw 自動化研究系統')
+footer.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+
+# 儲存
+filename = '/Users/hsuehkaiyen/Desktop/簡單版MultiAgent研究系統設計_' + now.strftime('%Y%m%d_%H%M') + '.docx'
+doc.save(filename)
+print('✅ 已儲存: ' + filename)

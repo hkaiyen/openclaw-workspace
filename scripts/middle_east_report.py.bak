@@ -1,0 +1,203 @@
+#!/usr/bin/env python3
+"""
+中東局勢追蹤報告生成腳本
+"""
+
+from docx import Document
+from docx.shared import Pt, RGBColor, Cm
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+import subprocess
+import datetime
+import json
+import urllib.parse
+
+NEWS_API_KEY = 'fd5f10b4b6714d9c9584370bb0903745'
+
+def get_news(query, lang='en', max_results=10):
+    encoded_q = urllib.parse.quote(query)
+    url = f'https://newsapi.org/v2/everything?q={encoded_q}&language={lang}&sortBy=publishedAt&pageSize={max_results}&apiKey={NEWS_API_KEY}'
+    result = subprocess.run(['curl', '-s', url], capture_output=True, text=True, timeout=15)
+    if result.stdout:
+        try:
+            data = json.loads(result.stdout)
+            if data.get('status') == 'ok' and data.get('articles'):
+                results = []
+                for a in data['articles'][:max_results]:
+                    title = a.get('title', '')
+                    # 過濾不相關的品牌/產品關鍵字
+                    skip_words = ['小米', 'Xiaomi', 'Redmi', '手機', '3C', '筆電', '平板', 'iPhone']
+                    if title and not any(w in title for w in skip_words):
+                        results.append((title, a['source']['name'], a.get('publishedAt','')[:10]))
+                return results
+        except: pass
+    return []
+
+def generate_report():
+    today = datetime.datetime.now()
+    date_str = today.strftime('%Y%m%d_%H%M')
+
+    doc = Document()
+    for section in doc.sections:
+        section.top_margin = Cm(2)
+        section.bottom_margin = Cm(2)
+        section.left_margin = Cm(2.5)
+        section.right_margin = Cm(2.5)
+
+    # ===== 標題 =====
+    title = doc.add_heading(f'🌍 中東局勢追蹤 {today.strftime("%Y年%m月%d日 %H:%M")}', 0)
+    title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    tr = title.runs[0]
+    tr.font.size = Pt(24)
+    tr.font.color.rgb = RGBColor(0x1F, 0x49, 0x7D)
+
+    sub = doc.add_paragraph()
+    sub.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    sr = sub.add_run('伊朗 · 以色列 · 荷莫茲海峽 · 美伊談判')
+    sr.font.size = Pt(12)
+    sr.font.color.rgb = RGBColor(0x70, 0x70, 0x70)
+    sr.font.italic = True
+
+    date_para = doc.add_paragraph()
+    date_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    dr = date_para.add_run(f'報告日期：{today.strftime("%Y年%m月%d日 %H:%M")}')
+    dr.font.size = Pt(10)
+    dr.font.color.rgb = RGBColor(0x99, 0x99, 0x99)
+
+    doc.add_paragraph()
+
+    # ===== 最新局勢摘要 =====
+    h1 = doc.add_heading('📊 最新局勢摘要', level=1)
+    h1.runs[0].font.color.rgb = RGBColor(0x1F, 0x49, 0x7D)
+
+    summary = [
+        '⚔️ 美伊停火協議出現裂痕，黎巴嫩戰火重燃',
+        '🚢 伊朗威脅封鎖荷莫茲海峽，800艘船舶受阻',
+        '✈️ 川普警告：美軍將重啟射擊行動',
+        '🇮🇱 以色列持續猛轟黎巴嫩，真主黨重創',
+        '🇮🇷 伊朗談判立場強硬，停火協議前途未卜'
+    ]
+    for s in summary:
+        p = doc.add_paragraph()
+        p.add_run(s)
+        p.paragraph_format.space_after = Pt(4)
+        p.paragraph_format.left_indent = Cm(0.3)
+
+    doc.add_paragraph()
+
+    # ===== 美伊停火動態 =====
+    h2 = doc.add_heading('⚔️ 美伊停火動態', level=1)
+    h2.runs[0].font.color.rgb = RGBColor(0x1F, 0x49, 0x7D)
+
+    news1 = get_news('伊朗 以色列 中東 停火', 'zh', 8)
+    if not news1:
+        news1 = get_news('Iran Israel Middle East ceasefire', 'en', 8)
+    if news1:
+        for title, src, date in news1:
+            p = doc.add_paragraph()
+            p.add_run(f'• {title}')
+            p.paragraph_format.space_after = Pt(6)
+            p.paragraph_format.left_indent = Cm(0.3)
+    else:
+        p = doc.add_paragraph()
+        p.add_run('（暫無最新消息）')
+
+    doc.add_paragraph()
+
+    # ===== 以色列行動 =====
+    h3 = doc.add_heading('🇮🇱 以色列行動', level=1)
+    h3.runs[0].font.color.rgb = RGBColor(0x1F, 0x49, 0x7D)
+
+    news2 = get_news('以色列 黎巴嫩 真主黨 戰爭', 'zh', 8)
+    if not news2:
+        news2 = get_news('Israel Lebanon Hezbollah war', 'en', 8)
+    if news2:
+        for title, src, date in news2:
+            p = doc.add_paragraph()
+            p.add_run(f'• {title}')
+            p.paragraph_format.space_after = Pt(6)
+            p.paragraph_format.left_indent = Cm(0.3)
+    else:
+        p = doc.add_paragraph()
+        p.add_run('（暫無最新消息）')
+
+    doc.add_paragraph()
+
+    # ===== 荷莫茲海峽局勢 =====
+    h4 = doc.add_heading('🚢 荷莫茲海峽', level=1)
+    h4.runs[0].font.color.rgb = RGBColor(0x1F, 0x49, 0x7D)
+
+    news3 = get_news('荷莫茲海峽 伊朗 石油 航運', 'zh', 8)
+    if not news3:
+        news3 = get_news('Hormuz Strait Iran oil shipping', 'en', 8)
+    if news3:
+        for title, src, date in news3:
+            p = doc.add_paragraph()
+            p.add_run(f'• {title}')
+            p.paragraph_format.space_after = Pt(6)
+            p.paragraph_format.left_indent = Cm(0.3)
+    else:
+        p = doc.add_paragraph()
+        p.add_run('（暫無最新消息）')
+
+    doc.add_paragraph()
+
+    # ===== 全球影響 =====
+    h5 = doc.add_heading('🌐 全球影響', level=1)
+    h5.runs[0].font.color.rgb = RGBColor(0x1F, 0x49, 0x7D)
+
+    news4 = get_news('油價 經濟 中東 戰爭 影響', 'zh', 8)
+    if not news4:
+        news4 = get_news('oil price economy Middle East war impact', 'en', 8)
+    if news4:
+        for title, src, date in news4:
+            p = doc.add_paragraph()
+            p.add_run(f'• {title}')
+            p.paragraph_format.space_after = Pt(6)
+            p.paragraph_format.left_indent = Cm(0.3)
+    else:
+        p = doc.add_paragraph()
+        p.add_run('（暫無最新消息）')
+
+    doc.add_paragraph()
+
+    # ===== 頁尾 =====
+    footer = doc.sections[0].footer
+    fp = footer.paragraphs[0]
+    fp.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    fr = fp.add_run('小安智能助理｜老闆的專屬理財幫手  ◎ 小安製')
+    fr.font.size = Pt(9)
+    fr.font.color.rgb = RGBColor(0xAA, 0xAA, 0xAA)
+
+    output_path = f'/Users/hsuehkaiyen/.openclaw/workspace/中東局勢追蹤_{date_str}.docx'
+    doc.save(output_path)
+    return output_path
+
+def send_to_telegram(file_path):
+    bot_token = '8546064006:AAE3Bw90cbOmN6hsKuUQVzMFI6BzdM55iUk'
+    chat_id = '8766466278'
+    today = datetime.datetime.now()
+    caption = f"🌍 中東局勢追蹤_{today.strftime('%Y年%m月%d日 %H:%M')}\n\n⚔️ 美伊 · 🇮🇱 以色列 · 🚢 荷莫茲海峽\n🌐 全球影響\n\n小安製"
+
+    result = subprocess.run(
+        ['curl', '-s', '-X', 'POST',
+         f'https://api.telegram.org/bot{bot_token}/sendDocument',
+         '-F', f'chat_id={chat_id}',
+         '-F', f'document=@{file_path}',
+         '-F', f'caption={caption}'],
+        capture_output=True, text=True, timeout=30
+    )
+    response = json.loads(result.stdout)
+    return response.get('ok', False)
+
+if __name__ == '__main__':
+    print(f'[{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}] 開始生成中東局勢報告...')
+    try:
+        report_path = generate_report()
+        print(f'📄 報告已生成: {report_path}')
+        if send_to_telegram(report_path):
+            print('✅ 已發送到 Telegram')
+        else:
+            print('❌ 發送失敗')
+        print(f'[{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}] 任務完成！')
+    except Exception as e:
+        print(f'❌ 錯誤: {e}')
