@@ -16,6 +16,7 @@ import re
 import urllib.parse
 import json
 import time
+import os
 
 BOT_TOKEN = '8704642969:AAERVfjKsxcHExGOfZP9h5412w9Sp1TtABw'
 CHAT_ID = '8779713208'
@@ -32,41 +33,45 @@ RSS_SOURCES = {
     'Ars Technica': 'https://feeds.arstechnica.com/arstechnica/index',
 }
 
-# ===== 翻譯函數（使用 Groq API - Llama）=====
+# ===== 翻譯函數（小歐 Groq GPT-OSS-120B）=====
 def translate_to_chinese(text):
     if not text or len(text) < 2:
         return text
-    try:
-        api_key = os.environ.get('GROQ_API_KEY', '')
-        if not api_key:
-            return text
-        payload = {
-            "model": "llama-3.3-70b-versatile",
-            "messages": [
-                {"role": "system", "content": "你是一個專業的科技新聞翻譯員。將以下英文標題翻譯成繁體中文，只回傳翻譯結果，不要加任何解釋或備註。"},
-                {"role": "user", "content": text[:500]}
-            ],
-            "temperature": 0.1,
-            "max_tokens": 200
-        }
-        req = urllib.request.Request(
-            "https://api.groq.com/openai/v1/chat/completions",
-            data=json.dumps(payload).encode(),
-            headers={
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json",
-                "User-Agent": "curl/8.0"
-            },
-            method="POST"
-        )
-        with urllib.request.urlopen(req, timeout=15) as resp:
-            data = json.loads(resp.read().decode())
-            result = data.get("choices", [{}])[0].get("message", {}).get("content", "").strip()
-            if result:
-                return result
-    except Exception as e:
-        print(f"  翻譯錯誤: {e}")
-    return text
+    api_key = os.environ.get('GROQ_API_KEY', '')
+    if not api_key:
+        return text
+    
+    payload = {
+        "model": "openai/gpt-oss-120b",
+        "messages": [
+            {"role": "system", "content": "你是小歐，專業股票翻譯分析師。將以下英文翻譯成繁體中文，只回傳翻譯結果，不要加任何解釋。"},
+            {"role": "user", "content": text[:500]}
+        ],
+        "temperature": 0.3,
+        "max_tokens": 200
+    }
+    
+    for attempt in range(3):  # 重試3次
+        try:
+            req = urllib.request.Request(
+                "https://api.groq.com/openai/v1/chat/completions",
+                data=json.dumps(payload).encode(),
+                headers={
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json",
+                    "User-Agent": "curl/8.0"
+                },
+                method="POST"
+            )
+            with urllib.request.urlopen(req, timeout=20) as resp:
+                data = json.loads(resp.read().decode())
+                result = data.get("choices", [{}])[0].get("message", {}).get("content", "").strip()
+                if result and len(result) > 3 and result != text:
+                    return result
+        except Exception as e:
+            if attempt == 2:
+                print(f"  翻譯錯誤（{attempt+1}次）: {text[:30]}...")
+    return text  # 失敗時回傳原文
 
 # ===== 工具函數 =====
 def set_cell_bg(cell, hex_color):
@@ -161,7 +166,7 @@ def main():
         all_news.extend(news)
         time.sleep(1)
     
-    # 去重（標題前40字為 key）
+    # 去重
     seen = set()
     unique_news = []
     for item in all_news:
@@ -170,7 +175,7 @@ def main():
             seen.add(key)
             unique_news.append(item)
     
-    print(f"  收集到 {len(unique_news)} 則新聞，去重後 {len(unique_news)} 則")
+    print(f"  收集到 {len(unique_news)} 則新聞")
     
     # 分類
     categorized = {cat: [] for cat in CATEGORIES.keys()}
@@ -180,17 +185,16 @@ def main():
         cats = categorize(item)
         for cat in cats:
             if cat in categorized and len(categorized[cat]) < 8:
-            # 避免單一新聞重複出現在太多分類
                 if item not in categorized[cat]:
                     categorized[cat].append(item)
     
-    # 翻譯（每則翻，隔0.3秒）
-    print(f"  翻譯 {len(unique_news)} 則新聞...")
+    # 小歐翻譯
+    print(f"  小歐翻譯中...")
     for cat in categorized:
         for item in categorized[cat]:
             if '_zh' not in item:
                 item['_zh'] = translate_to_chinese(item['title'])
-                time.sleep(0.3)
+                time.sleep(0.5)
     
     # 生成報告
     output_path = f"/root/.openclaw/reports/daily/科技新知_{today.strftime('%Y%m%d_%H%M')}.docx"
@@ -213,7 +217,6 @@ def main():
     sr = sub.add_run(f"📅 {today.strftime('%Y年%m月%d日')} | 🤖 AI · 💻 晶片 · 🍎 科技巨頭 · 🚀 新創")
     sr.font.size = Pt(11)
     sr.font.color.rgb = RGBColor(0x70, 0x70, 0x70)
-    sr.font.italic = True
     
     doc.add_paragraph()
     
@@ -224,6 +227,7 @@ def main():
         
         h = doc.add_heading(cat, level=1)
         h.runs[0].font.color.rgb = BLUE
+        h.runs[0].font.size = Pt(14)
         
         for item in items[:8]:
             p = doc.add_paragraph()
@@ -255,8 +259,8 @@ def main():
     doc.save(output_path)
     print(f"  ✅ 已儲存: {output_path}")
     
-    # 發送到 Telegram
-    caption = f"🚀 科技新知_{today.strftime('%Y年%m月%d日 %H:%M')}\n\n共 {len(unique_news)} 則資訊\n🤖 AI · 💻 晶片 · 🍎 巨頭 · 🚀 新創"
+    # 發送到 Telegram（小歐翻譯）
+    caption = f"🚀 科技新知_{today.strftime('%Y年%m月%d日 %H:%M')}\n\n共 {len(unique_news)} 則資訊\n🤖 AI · 💻 晶片 · 🍎 巨頭 · 🚀 新創\n\n小歐翻譯"
     result = subprocess.run([
         'curl', '-s', '-X', 'POST',
         f'https://api.telegram.org/bot{BOT_TOKEN}/sendDocument',
@@ -265,7 +269,6 @@ def main():
         '-F', f'caption={caption}'
     ], capture_output=True)
     
-    import json
     try:
         res = json.loads(result.stdout)
         if res.get('ok'):
