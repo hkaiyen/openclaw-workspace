@@ -11,6 +11,7 @@
 | 時間 | 任務 | 腳本 | 狀態 |
 |------|------|------|------|
 | 01:00 | 🏪 591店面出租報告 | `591_shop_report.py` | ✅ |
+| 02:00 | 📊 台股每日研究報告 | `taiwan_stock_report_v4.py` | ✅ |
 | 02:00 | ☀️ 晨間摘要 | `morning_briefing.py` | ✅ |
 | 04:45 | 📈 股市早盤 | `daily_market_report.py` | ✅ |
 | 06:00 | 📰 全方位新聞快報 | `daily_news_report.py` | ✅ |
@@ -90,7 +91,7 @@ bash ~/.openclaw/workspace/scripts/backup_openclaw.sh
 | 2026-04-19 | 新增美股七雄完整彙整報告 |
 | 2026-04-20 | 修正 daily_news_report.py 的 RSS 解析問題 |
 | 2026-04-20 | 統一所有腳本的 Bot Token 為新 Bot |
-| 2026-04-21 | 所有腳本 shebang 更新為 Python 3.14 |
+| 2026-04-22 | 新增台股每日研究報告（川寶投顧每天研究三檔股票） |
 
 ---
 
