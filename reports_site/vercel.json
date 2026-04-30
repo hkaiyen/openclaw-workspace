@@ -1,5 +1,6 @@
 {
-  "buildCommand": "mkdocs build",
+  "buildCommand": "echo 'Using pre-built site'",
   "outputDirectory": "site",
-  "framework": null
+  "framework": null,
+  "installCommand": "echo 'No install needed'"
 }
