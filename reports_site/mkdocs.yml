@@ -33,8 +33,10 @@ theme:
 
 nav:
   - 首頁: index.md
-  - 報告列表:
-    - reports/index.md
+  - 📈 股市與投資: reports/股市/index.md
+  - 🏠 房地產: reports/房地產/index.md
+  - 🛒 促銷活動: reports/促銷/index.md
+  - 📚 研究報告: reports/研究/index.md
 
 plugins:
   - search
