@@ -11,11 +11,13 @@
 | 時間 | 任務 | 腳本 | 狀態 |
 |------|------|------|------|
 | 01:00 | 🏪 591店面出租報告 | `591_shop_report.py` | ✅ |
-| 02:00 | 📊 台股每日研究報告 | `taiwan_stock_report_v4.py` | ✅ |
+| 02:00 | 📊 台股每日精選三檔股票 | `taiwan_stock_report_v4.py` | ✅ |
 | 02:00 | ☀️ 晨間摘要 | `morning_briefing.py` | ✅ |
 | 04:45 | 📈 股市早盤 | `daily_market_report.py` | ✅ |
 | 06:00 | 📰 全方位新聞快報 | `daily_news_report.py` | ✅ |
+| 07:00 | 🦅 川普電子報 | `trump_newsletter.py` | ✅ |
 | 每6小時 | 🌍 中東局勢追蹤 | `middle_east_report.py` | ✅ |
+| 14:00 | 📈 飆股篩選報告 | `taiwan_screener.py` | ✅ |
 | 14:00 | 📈 股市午盤 | `daily_market_report.py` | ✅ |
 | 23:00 | 💾 OpenClaw 備份 | `backup_openclaw.sh` | ✅ |
 
@@ -30,7 +32,7 @@
 | 週五 14:30 | 🏷️ 促銷活動報告 | `promotion_summary_report.py` | ✅ |
 | 週五 16:00 | 🌴 週末行程規劃 | `weekend_plan_report.py` | ✅ |
 | 週六 03:00 | 📔 每週日記報告 | `weekly_notion_diary_report.py` | ✅ |
-| 週六 09:00 | 📊 股票績效分析 | `market_performance_2026.py` | ✅ |
+| 週六 10:00 | 🐱 貓咪研究社 | `cat_research_report.py` | ✅ |
 
 ---
 
@@ -91,7 +93,7 @@ bash ~/.openclaw/workspace/scripts/backup_openclaw.sh
 | 2026-04-19 | 新增美股七雄完整彙整報告 |
 | 2026-04-20 | 修正 daily_news_report.py 的 RSS 解析問題 |
 | 2026-04-20 | 統一所有腳本的 Bot Token 為新 Bot |
-| 2026-04-22 | 新增台股每日研究報告（川寶投顧每天研究三檔股票） |
+| 2026-04-23 | 新增台股每日精選三檔股票（川寶投顧每天精選三檔） |
 
 ---
 

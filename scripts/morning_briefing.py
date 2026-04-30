@@ -3,7 +3,8 @@
 每日晨間摘要報告
 1. 天氣資訊
 2. 行事曆（今日+未來30天）
-3. 未讀郵件
+3. Google Tasks 待辦事項
+4. Gmail 未讀郵件
 """
 
 import subprocess
@@ -105,6 +106,60 @@ def get_weather():
         print(f"天氣取得失敗: {e}")
         return None
 
+# ========== 1.5 台灣節日 ==========
+def get_taiwan_holidays():
+    """取得台灣節日（從政府資料庫）"""
+    import datetime
+    
+    # 2026 年節日（直接列出主要節日）
+    holidays_2026 = {
+        '2026-01-01': '元旦',
+        '2026-01-28': '春節假開始',
+        '2026-01-29': '春節',
+        '2026-01-30': '春節',
+        '2026-01-31': '春節',
+        '2026-02-01': '春節',
+        '2026-02-02': '春節',
+        '2026-02-03': '春節',
+        '2026-02-04': '春節',
+        '2026-02-14': '春節補假',
+        '2026-02-15': '和平紀念日',
+        '2026-02-16': '和平紀念日補假',
+        '2026-02-28': '228紀念日',
+        '2026-03-08': '婦女節',
+        '2026-03-29': '清明節',
+        '2026-04-03': '兒童節',
+        '2026-04-04': '兒童節補假',
+        '2026-04-05': '清明節',
+        '2026-05-01': '勞動節',
+        '2026-06-19': '端午節',
+        '2026-06-20': '端午節補假',
+        '2026-09-28': '教師節',
+        '2026-10-01': '中秋節',
+        '2026-10-02': '中秋節補假',
+        '2026-10-10': '國慶日',
+        '2026-10-25': '台灣光復節',
+        '2026-11-12': '國父逝世紀念日',
+        '2026-12-25': '聖誕節',
+    }
+    
+    # 嘗試從 API 取得最新節日資料
+    try:
+        url = 'https://data.gov.ai/api/holidays?year=2026&country=TW'
+        result = subprocess.run(['curl', '-s', url], capture_output=True, text=True, timeout=10)
+        if result.returncode == 0 and result.stdout:
+            data = json.loads(result.stdout)
+            if 'holidays' in data:
+                for h in data['holidays']:
+                    date = h.get('date', '')[:10]
+                    name = h.get('name', '')
+                    if date and name:
+                        holidays_2026[date] = name
+    except:
+        pass
+    
+    return holidays_2026
+
 # ========== 股票報價（yfinance）==========
 def get_stock_prices():
     """取得主要股票報價（yfinance）"""
@@ -198,7 +253,75 @@ def get_calendar_events():
     events.sort(key=lambda x: x[0])
     return events
 
-# ========== 3. 未讀郵件 ==========
+# ========== 3. Google Tasks ==========
+def get_google_tasks():
+    """取得 Google Tasks 待辦事項 """
+    import urllib.request
+    
+    # 讀取 token
+    try:
+        with open('/root/.openclaw/google_tasks_token.json', 'r') as f:
+            token_data = json.load(f)
+        
+        access_token = token_data.get('access_token')
+        if not access_token:
+            return None
+        
+        # 檢查 token 是否過期，需要 refresh
+        import datetime
+        expires_at = token_data.get('expires_at', 0)
+        if datetime.datetime.now().timestamp() >= expires_at:
+            # refresh token
+            refresh_token = token_data.get('refresh_token')
+            if refresh_token:
+                client_id = '620667525511-qekqk0quvad4v9mdgv3t9p773fsno3r7.apps.googleusercontent.com'
+                client_secret = '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'
+                
+                url = 'https://oauth2.googleapis.com/token'
+                payload = {
+                    'client_id': client_id,
+                    'client_secret': client_secret,
+                    'refresh_token': refresh_token,
+                    'grant_type': 'refresh_token'
+                }
+                
+                data = json.dumps(payload).encode('utf-8')
+                req = urllib.request.Request(url, data=data, headers={'Content-Type': 'application/json'})
+                
+                with urllib.request.urlopen(req, timeout=30) as response:
+                    result = json.loads(response.read().decode('utf-8'))
+                    access_token = result['access_token']
+                    token_data['access_token'] = access_token
+                    token_data['expires_at'] = datetime.datetime.now().timestamp() + result.get('expires_in', 3600)
+                    
+                    with open('/root/.openclaw/google_tasks_token.json', 'w') as f:
+                        json.dump(token_data, f, indent=2)
+        
+        headers = {'Authorization': f'Bearer {access_token}'}
+        
+        # 取得 Tasks
+        url = 'https://tasks.googleapis.com/tasks/v1/lists/@default/tasks?maxResults=20'
+        req = urllib.request.Request(url, headers=headers)
+        
+        with urllib.request.urlopen(req, timeout=30) as response:
+            result = json.loads(response.read().decode('utf-8'))
+            tasks = result.get('items', [])
+            
+            # 分類
+            pending = [t for t in tasks if t.get('status') != 'completed']
+            completed = [t for t in tasks if t.get('status') == 'completed']
+            
+            return {
+                'pending': pending[:10],  # 最多10項
+                'completed': len(completed),
+                'total': len(tasks)
+            }
+            
+    except Exception as e:
+        print(f'Google Tasks 讀取失敗: {e}')
+        return None
+
+# ========== 4. 未讀郵件 ==========
 def get_unread_email():
     """取得未讀郵件（macOS Mail + Gmail）"""
     all_emails = []
@@ -296,7 +419,7 @@ def parse_emails(raw):
         return {'count': 0, 'emails': []}
 
 # ========== 生成報告 ==========
-def generate_report(weather_data, events, emails_data, today):
+def generate_report(weather_data, events, tasks_data, emails_data, today):
     doc = Document()
     for section in doc.sections:
         section.top_margin = Cm(2)
@@ -357,9 +480,14 @@ def generate_report(weather_data, events, emails_data, today):
 
     doc.add_paragraph()
 
-    # ===== 2. 行事曆 =====
+    # ===== 2. 行事曆（含台灣節日）=====
     h2 = doc.add_heading('二、行事曆', level=1)
     h2.runs[0].font.color.rgb = RGBColor(0x1F, 0x49, 0x7D)
+
+    # 取得台灣節日
+    taiwan_holidays = get_taiwan_holidays()
+    today_str = today.strftime('%Y-%m-%d')
+    upcoming_holidays = {k: v for k, v in taiwan_holidays.items() if k >= today_str[:8] + '01' and k <= (today + datetime.timedelta(days=60)).strftime('%Y-%m-%d')}
 
     # 行事曆
     p = doc.add_paragraph()
@@ -372,11 +500,49 @@ def generate_report(weather_data, events, emails_data, today):
     else:
         p.add_run('• 沒有行程安排')
 
+    # 台灣節日
+    if upcoming_holidays:
+        p.add_run('\n🇹🇼 台灣節日\n').bold = True
+        for date_str, name in sorted(upcoming_holidays.items()):
+            display_date = f"{date_str[5:7]}/{date_str[8:10]}"
+            p.add_run(f'• {display_date} — {name}\n')
+
     doc.add_paragraph()
 
-    # ===== 3. 未讀郵件 =====
-    h3 = doc.add_heading('三、未讀郵件', level=1)
+    # ===== 3. Google Tasks =====
+    h3 = doc.add_heading('三、Google Tasks 待辦事項', level=1)
     h3.runs[0].font.color.rgb = RGBColor(0x1F, 0x49, 0x7D)
+
+    if tasks_data:
+        pending = tasks_data.get('pending', [])
+        completed = tasks_data.get('completed', 0)
+        total = tasks_data.get('total', 0)
+
+        p = doc.add_paragraph()
+        p.add_run(f'📋 待辦事項（共 {total} 項，已完成 {completed} 項）\n').bold = True
+        p.runs[0].font.size = Pt(11)
+
+        if pending:
+            for task in pending:
+                title = task.get('title', '（無標題）')
+                due = task.get('due', '')
+                if due:
+                    due_str = due[:10]
+                    p.add_run(f'• {title}（到期：{due_str}）\n')
+                else:
+                    p.add_run(f'• {title}\n')
+        else:
+            p.add_run('• 目前沒有待辦事項')
+    else:
+        p = doc.add_paragraph()
+        p.add_run('⚠️ 無法取得 Google Tasks（請確認授權）')
+        p.runs[0].font.color.rgb = RGBColor(0xC0, 0x00, 0x00)
+
+    doc.add_paragraph()
+
+    # ===== 4. 未讀郵件 =====
+    h4 = doc.add_heading('四、未讀郵件', level=1)
+    h4.runs[0].font.color.rgb = RGBColor(0x1F, 0x49, 0x7D)
 
     count = emails_data['count']
     emails = emails_data['emails']
@@ -408,7 +574,7 @@ def generate_report(weather_data, events, emails_data, today):
     return output_path
 
 def send_to_telegram(doc_path, today):
-    caption = f"☀️ 晨間摘要_{today.strftime('%Y年%m月%d日')}\n\n天氣 · 行事曆 · 郵件"
+    caption = f"☀️ 晨間摘要_{today.strftime('%Y年%m月%d日')}\n\n天氣 · 行事曆 · Tasks · Gmail"
     
     # 重試機制：最多嘗試3次
     for attempt in range(3):
@@ -448,7 +614,15 @@ def main():
     events = get_calendar_events()
     print(f"   ✅ 找到 {len(events)} 個行程")
 
-    # 3. 未讀郵件
+    # 3. Google Tasks
+    print("\n📋 取得 Google Tasks...")
+    tasks_data = get_google_tasks()
+    if tasks_data:
+        print(f"   ✅ Tasks 取得成功：{tasks_data['total']} 項待辦")
+    else:
+        print("   ⚠️ 無法取得 Google Tasks")
+
+    # 4. 未讀郵件
     print("\n📬 取得未讀郵件...")
     raw_emails = get_unread_email()
     emails_data = parse_emails(raw_emails)
@@ -457,7 +631,7 @@ def main():
     # 生成報告
     print("\n" + "=" * 50)
     print("📝 生成報告...")
-    doc_path = generate_report(weather_data, events, emails_data, today)
+    doc_path = generate_report(weather_data, events, tasks_data, emails_data, today)
     send_to_telegram(doc_path, today)
     print("✅ 完成！")
 

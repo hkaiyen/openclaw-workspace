@@ -1,0 +1,42 @@
+/* 放大所有文字 */
+body {
+    font-size: 18px !important;
+}
+
+.md-typeset {
+    font-size: 17px !important;
+    line-height: 1.6 !important;
+}
+
+/* 標題放大 */
+.md-typeset h1 {
+    font-size: 2.2em !important;
+}
+
+.md-typeset h2 {
+    font-size: 1.8em !important;
+}
+
+.md-typeset h3 {
+    font-size: 1.4em !important;
+}
+
+/* 表格文字放大 */
+.md-typeset table {
+    font-size: 16px !important;
+}
+
+/* 導航選單放大 */
+.md-nav__link {
+    font-size: 16px !important;
+}
+
+/* 程式碼區塊 */
+.md-typeset code {
+    font-size: 15px !important;
+}
+
+/* footer 放大 */
+.md-footer-copyright {
+    font-size: 14px !important;
+}

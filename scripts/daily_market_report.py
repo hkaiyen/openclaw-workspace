@@ -56,9 +56,9 @@ def add_data_cell(cell, text, is_positive=None):
 # ========== Finnhub ==========
 
 def get_finnhub_quote(symbol):
-    api_key = os.environ.get('FINNHUB_API_KEY', '')
+    api_key = os.environ.get('FINNHUB_API_KEY', 'd7btfs1r01quh9fbn7m0d7btfs1r01quh9fbn7mg')
     if not api_key:
-        return None
+        api_key = 'd7btfs1r01quh9fbn7m0d7btfs1r01quh9fbn7mg'
     try:
         result = subprocess.run(
             ['curl', '-s', f'https://finnhub.io/api/v1/quote?symbol={symbol}&token={api_key}'],

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>台股AI每日精選 - 讓AI為你選股</title>
+    <meta name="description" content="AI自動分析每日新聞與市場數據，每天早上8:30為你精選3檔潛力股票。免費訂閱，現在開始！">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', -apple-system, sans-serif; background: #0a0a0a; color: #fff; line-height: 1.6; }
+        
+        /* Hero Section */
+        .hero { 
+            text-align: center; 
+            padding: 120px 20px; 
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .hero-badge {
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            color: #000;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-bottom: 30px;
+        }
+        .hero h1 { font-size: 3.5em; margin-bottom: 20px; color: #00d4ff; }
+        .hero p { font-size: 1.4em; color: #aaa; max-width: 650px; margin: 0 auto 40px; }
+        .hero-highlight {
+            background: #1a1a2e;
+            border: 1px solid #333;
+            border-radius: 16px;
+            padding: 30px 50px;
+            margin: 30px 0;
+            max-width: 500px;
+        }
+        .hero-highlight .time { font-size: 2em; color: #00d4ff; font-weight: bold; }
+        .hero-highlight .label { color: #888; margin-top: 5px; }
+        
+        /* CTA Button */
+        .cta { text-align: center; padding: 40px 20px; }
+        .btn { 
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            color: #000; 
+            padding: 18px 50px; 
+            border: none; 
+            border-radius: 30px; 
+            font-size: 1.2em; 
+            cursor: pointer; 
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 30px rgba(0, 212, 255, 0.5); }
+        
+        /* Features Section */
+        .features { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 30px; 
+            padding: 80px 40px; 
+            max-width: 1200px; 
+            margin: 0 auto;
+        }
+        .feature { 
+            background: #1a1a2e; 
+            padding: 40px; 
+            border-radius: 16px; 
+            text-align: center;
+            border: 1px solid #2a2a4e;
+            transition: border-color 0.3s;
+        }
+        .feature:hover { border-color: #00d4ff; }
+        .feature-icon { font-size: 3em; margin-bottom: 20px; }
+        .feature h3 { font-size: 1.4em; margin-bottom: 15px; color: #00d4ff; }
+        .feature p { color: #888; }
+        
+        /* How it Works */
+        .how-it-works { padding: 80px 40px; background: #0f0f1a; }
+        .how-it-works h2 { text-align: center; font-size: 2.2em; margin-bottom: 50px; color: #fff; }
+        .steps { display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; max-width: 1000px; margin: 0 auto; }
+        .step { text-align: center; width: 250px; }
+        .step-number {
+            width: 60px; height: 60px;
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #000;
+            margin: 0 auto 20px;
+        }
+        .step h4 { font-size: 1.2em; margin-bottom: 10px; color: #fff; }
+        .step p { color: #888; font-size: 0.95em; }
+        
+        /* Sample Report Preview */
+        .sample {
+            padding: 80px 40px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .sample h2 { text-align: center; font-size: 2.2em; margin-bottom: 40px; color: #fff; }
+        .sample-card {
+            background: #1a1a2e;
+            border-radius: 16px;
+            padding: 40px;
+            border: 1px solid #2a2a4e;
+        }
+        .sample-date { color: #00d4ff; font-size: 1.1em; margin-bottom: 20px; }
+        .sample-stock {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #2a2a4e;
+        }
+        .sample-stock:last-child { border-bottom: none; }
+        .stock-code { font-size: 1.3em; font-weight: bold; color: #fff; width: 100px; }
+        .stock-name { color: #888; flex: 1; }
+        .stock-reason { color: #00d4ff; font-size: 0.9em; }
+        
+        /* FAQ */
+        .faq { padding: 80px 40px; background: #0f0f1a; }
+        .faq h2 { text-align: center; font-size: 2.2em; margin-bottom: 50px; color: #fff; }
+        .faq-item { max-width: 700px; margin: 0 auto 20px; }
+        .faq-q { color: #00d4ff; font-size: 1.1em; font-weight: bold; margin-bottom: 10px; }
+        .faq-a { color: #888; }
+        
+        /* Footer */
+        .footer { text-align: center; padding: 40px; color: #555; font-size: 0.9em; }
+        .footer a { color: #00d4ff; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <div class="hero-badge">🎯 已有 127 位投資者使用</div>
+        <h1>台股AI每日精選</h1>
+        <p>告別選股焦慮！AI自動分析每日新聞與市場數據，每天早上為你精選3檔潛力股票</p>
+        
+        <div class="hero-highlight">
+            <div class="time">📅 每天 08:30</div>
+            <div class="label">準時發送到你的 Telegram</div>
+        </div>
+        
+        <a href="https://t.me/Anyucloud_bot?start=subscribe" class="btn">立即免費開始 →</a>
+        <p style="color: #666; margin-top: 15px; font-size: 0.9em;">完全免費 • 隨時取消 • 無廣告</p>
+    </div>
+    
+    <div class="features">
+        <div class="feature">
+            <div class="feature-icon">🔍</div>
+            <h3>智能分析</h3>
+            <p>AI即時分析全球財經新聞、台股公告與社群輿情，找出被低估的優質股票</p>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">💰</div>
+            <h3>精選3檔</h3>
+            <p>每日嚴選3檔具備上漲潛力的股票，不多不少，讓你輕鬆追蹤</p>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">📱</div>
+            <h3>Telegram 即時推播</h3>
+            <p>每天早上8:30準時發送，第一時間掌握投資機會</p>
+        </div>
+    </div>
+    
+    <div class="how-it-works">
+        <h2>如何開始</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h4>點擊連結</h4>
+                <p>點擊上方按鈕，開啟 Telegram Bot</p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h4>訂閱</h4>
+                <p>輸入 /start 訂閱每日精選</p>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h4>每日接收</h4>
+                <p>每天早上8:30準時收到報告</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="sample">
+        <h2>📊 報告範例</h2>
+        <div class="sample-card">
+            <div class="sample-date">📅 2026年4月28日 星期二</div>
+            
+            <div class="sample-stock">
+                <span class="stock-code">2330</span>
+                <span class="stock-name">台積電</span>
+                <span class="stock-reason">→ AI晶片需求大增，產能滿載</span>
+            </div>
+            
+            <div class="sample-stock">
+                <span class="stock-code">2454</span>
+                <span class="stock-name">聯發科</span>
+                <span class="stock-reason">→ 新款手機晶片獲三星採用</span>
+            </div>
+            
+            <div class="sample-stock">
+                <span class="stock-code">2303</span>
+                <span class="stock-name">聯電</span>
+                <span class="stock-reason">→ 成熟製程報價調漲</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="faq">
+        <h2>常見問題</h2>
+        <div class="faq-item">
+            <div class="faq-q">這個服務是完全免費的嗎？</div>
+            <div class="faq-a">是的，完全免費！我們希望讓更多投資者受惠於AI選股。</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q">我可以隨時取消嗎？</div>
+            <div class="faq-a">當然可以，輸入 /stop 即可取消訂閱，沒有任何限制。</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q">AI推薦的股票準嗎？</div>
+            <div class="faq-a">我們的AI會分析多種數據源，但投資有風險，請謹慎評估。</div>
+        </div>
+    </div>
+    
+    <div class="cta">
+        <a href="https://t.me/Anyucloud_bot?start=subscribe" class="btn">立即免費開始 →</a>
+    </div>
+    
+    <div class="footer">
+        <p>© 2026 台股AI每日精選 | 僅供參考，不構成投資建議</p>
+        <p style="margin-top: 10px;">
+            <a href="https://t.me/Anyucloud_bot">@Anyucloud_bot</a>
+        </p>
+    </div>
+</body>
+</html>

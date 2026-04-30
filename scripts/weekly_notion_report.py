@@ -749,7 +749,7 @@ def generate_comprehensive_report():
     fr2.font.color.rgb = RGBColor(0xCC, 0xCC, 0xCC)
     
     # 儲存
-    output_path = f'/Users/hsuehkaiyen/Desktop/每週全方位報告_{datetime.now().strftime("%Y%m%d")}.docx'
+    output_path = f'/root/.openclaw/reports/weekly/每週全方位報告_{datetime.now().strftime("%Y%m%d")}.docx'
     doc.save(output_path)
     print(f"  ✓ 報告已儲存: {output_path}")
     

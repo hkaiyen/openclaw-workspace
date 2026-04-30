@@ -18,6 +18,8 @@ import json
 import time
 import os
 
+GROQ_API_KEY = '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'
+
 BOT_TOKEN = '8704642969:AAERVfjKsxcHExGOfZP9h5412w9Sp1TtABw'
 CHAT_ID = '8779713208'
 
@@ -37,7 +39,7 @@ RSS_SOURCES = {
 def translate_to_chinese(text):
     if not text or len(text) < 2:
         return text
-    api_key = os.environ.get('GROQ_API_KEY', '')
+    api_key = GROQ_API_KEY  # 使用腳本中的 API Key
     if not api_key:
         return text
     

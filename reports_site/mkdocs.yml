@@ -31,6 +31,9 @@ theme:
     - search.highlight
     - content.code.copy
 
+extra_css:
+  - stylesheets/extra.css
+
 nav:
   - 首頁: index.md
   - 📈 股市與投資: reports/股市/index.md

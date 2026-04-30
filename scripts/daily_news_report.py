@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """
 全方位新聞快報
-全方位新聞快報 RSS
+直接抓取自由時報分類 RSS
 """
 
 from docx import Document
@@ -14,34 +14,16 @@ import subprocess
 import datetime
 import json
 import re
-import urllib.request
 import xml.etree.ElementTree as ET
 
-# ========== 翻譯函數 ==========
-def translate_to_chinese(text):
-    """使用 MyMemory API 翻譯為中文"""
-    if not text or len(text) < 2:
-        return text
-    try:
-        encoded = urllib.parse.quote(text[:500])
-        url = f"https://api.mymemory.translated.net/get?q={encoded}&langpair=en|zh-TW"
-        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            data = json.loads(resp.read().decode())
-            result = data.get("responseData", {}).get("translatedText", "")
-            if result and result != text:
-                return result
-    except:
-        pass
-    return text
-
-import urllib.parse
-
-# ========== 新聞分類RSS ==========
-RSS_SOURCES = {
-    '🌏 國際': 'https://feeds.bbci.co.uk/news/world/rss.xml',
-    '🌍 全球': 'https://www.france24.com/en/rss',
-    '📈 財經': 'https://feeds.bbci.co.uk/news/business/rss.xml',
+# ========== Yahoo 新聞 RSS ==========
+YAHOO_CATEGORIES = {
+    '🌏 國際': 'https://tw.news.yahoo.com/rss',
+    '📈 財經': 'https://tw.stock.yahoo.com/rss',
+    '🏛️ 政治': 'https://tw.news.yahoo.com/rss/politics',
+    '🏠 社會': 'https://tw.news.yahoo.com/rss/society',
+    '⚽ 體育': 'https://tw.sports.yahoo.com/rss',
+    '🎬 娛樂': 'https://tw.news.yahoo.com/rss/entertainment',
 }
 
 # ========== 工具函數 ==========
@@ -102,9 +84,6 @@ def fetch_category(category_name, url, count=5):
                         title_text = title_text[:-3]
                     title_text = re.sub(r'<[^>]+>', '', title_text)
                     if title_text and len(title_text) > 5:
-                        # BBC / France24 來源需要翻譯成中文
-                        if 'bbci.co.uk' in url or 'france24.com' in url:
-                            title_text = translate_to_chinese(title_text)
                         news_list.append(title_text)
     except:
         pass
@@ -115,7 +94,7 @@ def fetch_all_news():
     """抓取所有分類新聞"""
     all_news = {}
     
-    for category, url in RSS_SOURCES.items():
+    for category, url in YAHOO_CATEGORIES.items():
         news = fetch_category(category, url, 5)
         all_news[category] = news
     
@@ -143,7 +122,7 @@ def generate_report():
 
     sub = doc.add_paragraph()
     sub.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    sr = sub.add_run('多元新聞來源')
+    sr = sub.add_run('自由時報分類新聞')
     sr.font.size = Pt(12)
     sr.font.color.rgb = RGBColor(0x70, 0x70, 0x70)
     sr.font.italic = True
@@ -162,7 +141,7 @@ def generate_report():
     # ===== 各分類內容 ======
     section_num = 1
     
-    for emoji, url in RSS_SOURCES.items():
+    for emoji, url in YAHOO_CATEGORIES.items():
         news_list = all_news.get(emoji, [])
         
         h = doc.add_heading(f'{section_num}、{emoji}', level=1)
@@ -200,9 +179,9 @@ def send_to_telegram(file_path):
     today = datetime.datetime.now()
     
     # 動態生成分類列表
-    cats = ' · '.join([emoji for emoji, _ in RSS_SOURCES.items()])
+    cats = ' · '.join([emoji for emoji, _ in YAHOO_CATEGORIES.items()])
     
-    caption = f"📰 全方位新聞快報_{today.strftime('%Y年%m月%d日 %H:%M')}\n\n多元新聞來源\n\n{cats}\n\n小安製"
+    caption = f"📰 全方位新聞快報_{today.strftime('%Y年%m月%d日 %H:%M')}\n\n自由時報分類新聞\n\n{cats}\n\n小安製"
 
     result = subprocess.run(
         ['curl', '-s', '-X', 'POST',

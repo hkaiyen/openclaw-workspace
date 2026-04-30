@@ -53,6 +53,8 @@
       
     
     
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -463,18 +465,7 @@
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        最新報告
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        所有報告
+        目前沒有報告
       
     </span>
   </a>
@@ -561,38 +552,8 @@
 
 
 <h1 id="_1">🏠 房地產報告<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
-<h2 id="_2">最新報告<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
-<h2 id="_3">所有報告<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>檔案</th>
-<th>日期</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>{% for page in pages %}</td>
-<td></td>
-</tr>
-<tr>
-<td>{% if '/房地產/' in page.url %}</td>
-<td></td>
-</tr>
-<tr>
-<td><a href="{{ page.url }}">{{ page.title }}</a></td>
-<td>-</td>
-</tr>
-<tr>
-<td>{% endif %}</td>
-<td></td>
-</tr>
-<tr>
-<td>{% endfor %}</td>
-<td></td>
-</tr>
-</tbody>
-</table>
+<h2 id="_2">目前沒有報告<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>房地產相關報告將會自動添加到這裡。</p>
 
 
 

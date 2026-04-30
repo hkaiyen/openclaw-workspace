@@ -131,7 +131,7 @@ def get_calendar():
 def get_weather():
     """取得週末天氣（Taipei）"""
     try:
-        url = "https://wttr.in/Taipei?format=%c+%t&lang=zh"
+        url = "https://wttr.in/Taipei?format=%c+%t&lang=zh&m"
         result = subprocess.run(['curl', '-s', url], capture_output=True, text=True, timeout=10)
         if result.stdout:
             return result.stdout.strip()

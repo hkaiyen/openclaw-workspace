@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """
 中東局勢追蹤報告生成腳本 - 即時版
-新聞來源：BBC + Al Jazeera RSS（翻譯為中文）
+新聞來源：自由時報 + 中央社 + 聯合報 RSS
 國際+臺灣最新資訊
 """
 
@@ -18,15 +18,23 @@ import json
 
 BOT_TOKEN = '8704642969:AAERVfjKsxcHExGOfZP9h5412w9Sp1TtABw'
 CHAT_ID = '8779713208'
+GROQ_API_KEY = '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'
 BLUE = RGBColor(0x1F, 0x49, 0x7D)
 RED = RGBColor(0xCC, 0x00, 0x00)
 GREEN = RGBColor(0x00, 0x80, 0x00)
 ORANGE = RGBColor(0xFF, 0x66, 0x00)
 
 def translate_to_chinese(text):
-    """使用 MyMemory API 翻譯為中文"""
+    """使用 MyMemory API 翻譯（如果失敗就回傳原文）"""
     if not text or len(text) < 2:
         return text
+    
+    # 檢查是否需要翻譯（完全沒有中文才需要）
+    import re
+    if bool(re.search(r'[\u4e00-\u9fff]', text)):
+        return text
+    
+    # 使用 MyMemory（偶爾會失敗，失敗就回傳原文）
     try:
         encoded = urllib.parse.quote(text[:500])
         url = f"https://api.mymemory.translated.net/get?q={encoded}&langpair=en|zh-TW"
@@ -34,11 +42,12 @@ def translate_to_chinese(text):
         with urllib.request.urlopen(req, timeout=10) as resp:
             data = json.loads(resp.read().decode())
             result = data.get("responseData", {}).get("translatedText", "")
-            if result and result != text:
+            if result and result != text and len(result) > 5 and bool(re.search(r'[\u4e00-\u9fff]', result)):
                 return result
     except:
         pass
-    return text
+    
+    return text  # 失敗就回傳原文
 
 def search_duckduckgo(query, max_results=8):
     """用 DuckDuckGo 搜尋即時資訊"""
@@ -127,15 +136,17 @@ def generate_report():
 
     # ===== RSS 新聞來源 =====
     rss_sources = [
-        ('https://feeds.bbci.co.uk/news/world/rss.xml', 'BBC World'),
-        ('https://www.aljazeera.com/xml/rss/all.xml', 'Al Jazeera'),
+        # 台灣主要媒體
+        ('https://news.ltn.com.tw/rss/world.xml', '自由時報'),
+        ('https://www.cna.com.tw/rss/all.xml', '中央社'),
+        ('https://udn.com/rssfeed/news/2/6648?ch=news', '聯合報'),
     ]
 
     all_rss_news = []
     for url, name in rss_sources:
-        news = fetch_rss_news(url, name, max_items=50)
+        news = fetch_rss_news(url, name, max_items=30)  # 減少數量
         all_rss_news.extend(news)
-        time.sleep(1)
+        time.sleep(2)
 
     # 去重
     seen_titles = set()
@@ -146,14 +157,11 @@ def generate_report():
             seen_titles.add(key)
             unique_news.append(item)
 
-    # 翻譯所有標題為中文（一次翻完，避免顯示時多次 API 呼叫）
-    print(f'   翻譯 {len(unique_news)} 則新聞標題...')
+    # 翻譯已停用，改為直接使用原文
+    # 小安將手動翻譯英文標題
+    print(f'   收集 {len(unique_news)} 則新聞（翻譯由小安負責）...')
     for item in unique_news:
-        original = item.get('title', '')
-        if original:
-            translated = translate_to_chinese(original)
-            item['_title_zh'] = translated
-            time.sleep(0.3)
+        item['_title_zh'] = item.get('title', '')
 
     # ===== 搜尋即時資訊（DuckDuckGo 已停用，改用 RSS）=====
     # search_queries = [...]  # 已停用
@@ -171,7 +179,7 @@ def generate_report():
     #     if url_key and url_key not in seen_urls:
     #         seen_urls.add(url_key)
     #         unique_search.append(item)
-    unique_search = []  # DuckDuckGo 已停用，改用 BBC + Al Jazeera
+    unique_search = []  # DuckDuckGo 已停用
 
     # ===== 第一章：最新局勢摘要 =====
     h1 = doc.add_heading('📊 最新局勢摘要', level=1)
@@ -344,9 +352,9 @@ def generate_report():
     h8.runs[0].font.color.rgb = BLUE
 
     sources = [
-        '• BBC World News (RSS)',
-        '• Al Jazeera (RSS)',
-        '• DuckDuckGo 即時搜尋（已停用，暫用 RSS 替代）',
+        '• 自由時報（RSS）',
+        '• 中央社（RSS）',
+        '• 聯合報（RSS）',
     ]
     for s in sources:
         p = doc.add_paragraph(s)
@@ -386,7 +394,7 @@ def send_to_telegram(file_path):
         f'⚡ 能源市場與航運\n'
         f'🇹🇼 臺灣相關資訊\n'
         f'💹 全球市場影響\n\n'
-        f'資料來源：DuckDuckGo 即時搜尋 + RSS\n'
+        f'資料來源：自由時報 + 中央社 + 聯合報（RSS）\n'
         f'小安製'
     )
     try:

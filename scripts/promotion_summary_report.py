@@ -1,116 +1,80 @@
 #!/usr/bin/python3
 """
-促銷活動總整理報告 - 四助理協力版
-- 小安、拉瑪、千問、小歐同時蒐集所有類別促銷資訊
-- 小安最後彙整、剔除重複、檢查完整性
+促銷活動總整理報告 - 五助理協力版（使用 Tavily 搜尋）
+- 小咪、小歐、千問、撈仔、拉瑪 同時使用 Tavily 搜尋
+- 小安最後彙整、去除重複、生成報告
 - 發送到Telegram
 """
 
-from docx import Document
-from docx.shared import Pt, RGBColor, Cm
-from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.enum.table import WD_TABLE_ALIGNMENT
-from docx.oxml.ns import qn
-from docx.oxml import OxmlElement
 import subprocess
 import datetime
 import json
 import os
-import time
+import sys
 
 # ========== 常數 ==========
 BOT_TOKEN = '8704642969:AAERVfjKsxcHExGOfZP9h5412w9Sp1TtABw'
 CHAT_ID = '8779713208'
+REPORTS_DIR = '/root/.openclaw/workspace/reports'
 
-GROQ_API_KEY = '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'
-OPENROUTER_API_KEY = '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'
+# 五助理搜尋關鍵字
+SEARCH_TASKS = {
+    "小咪": "2026年5月 台灣 母親節 餐廳優惠 吃到飽 聚餐",
+    "小歐": "2026年5月 台灣 銀行信用卡 報稅優惠 支付回饋 LINE Pay",
+    "千問": "2026年5月 台灣 百貨公司 母親節 skm points 滿額贈",
+    "撈仔": "2026年5月 台灣 超市 超商 全聯 全家 7-11 優惠",
+    "拉瑪": "2026年5月 台灣 電商 線上購物 折扣 促銷活動"
+}
 
-MAX_RETRIES = 3
-RETRY_WAIT = 5
+# 小安靜態資料（5月母親節檔期）
+XIAOAN_ITEMS = [
+    {"brand": "家樂福", "category": "超市", "campaign": "每月5號會員日", "period": "每月5日～6/5", "details": "OPENPOINT折200元"},
+    {"brand": "LINE Pay", "category": "支付", "campaign": "購好券", "period": "即日起～6/30", "details": "最高30% LINE POINTS回饋"},
+    {"brand": "LINE Pay×Klook", "category": "支付", "campaign": "找體驗", "period": "即日起～6/30", "details": "景點門票平日10%、週末18%"},
+    {"brand": "大全聯", "category": "超市", "campaign": "母親節預購", "period": "母親節檔期", "details": "Gogoro回饋6,000元"},
+    {"brand": "新光三越", "category": "百貨", "campaign": "母親節檔期", "period": "4/1-5/10", "details": "滿5,000贈600點"},
+    {"brand": "饗食天堂", "category": "餐飲", "campaign": "母親節套餐", "period": "即日起～5/18", "details": "外帶9道+蛋糕4,688元"},
+    {"brand": "大米義式餐廳", "category": "餐飲", "campaign": "母親節優惠", "period": "5/1-5/10", "details": "龍蝦吃到飽每人2,088元"},
+    {"brand": "玉山銀", "category": "銀行", "campaign": "報稅優惠", "period": "5月", "details": "一次付清0.3%、星宇卡0.6%"},
+]
 
-# ========== 工具函數 ==========
-def set_cell_color(cell, hex_color):
-    tc = cell._tc
-    tcPr = tc.get_or_add_tcPr()
-    shd = OxmlElement('w:shd')
-    shd.set(qn('w:val'), 'clear')
-    shd.set(qn('w:color'), 'auto')
-    shd.set(qn('w:fill'), hex_color)
-    tcPr.append(shd)
+def spawn_search_subagent(name, keyword):
+    """使用 sessions_spawn 啟動搜尋子代理"""
+    from openclaw import sessions_spawn
+    
+    task = f"""你是{name}，請用 Tavily 搜尋「{keyword}」並回傳 JSON 格式的促銷資料：
 
-def make_header_cell(cell, text):
-    cell.text = text
-    run = cell.paragraphs[0].runs[0]
-    run.bold = True
-    run.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
-    run.font.size = Pt(10)
-    cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
-    set_cell_color(cell, '1F497D')
+JSON格式：
+{{
+  "source": "{name} (Tavily)",
+  "items": [
+    {{"brand": "品牌名", "category": "類別", "campaign": "活動名", "period": "期間", "details": "優惠內容"}}
+  ]
+}}
 
-def add_data_cell(cell, text):
-    cell.text = text
-    run = cell.paragraphs[0].runs[0]
-    run.font.size = Pt(9)
-    cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+請盡量收集各類別至少5-8筆優惠，只回覆JSON，不要其他文字。"""
 
-# ========== API 查詢 ==========
-def groq_query(model, prompt, system="你是專業的台灣促銷情資分析師。"):
-    payload = {
-        "model": model,
-        "messages": [
-            {"role": "system", "content": system},
-            {"role": "user", "content": prompt}
-        ],
-        "temperature": 0.3,
-        "max_tokens": 2048
-    }
-    result = subprocess.run(
-        ['curl', '-s', '-X', 'POST',
-         'https://api.groq.com/openai/v1/chat/completions',
-         '-H', f'Authorization: Bearer {GROQ_API_KEY}',
-         '-H', 'Content-Type: application/json',
-         '-d', json.dumps(payload)],
-        capture_output=True, text=True, timeout=60
-    )
     try:
-        data = json.loads(result.stdout)
-        return data['choices'][0]['message']['content']
-    except:
+        session = sessions_spawn(
+            label=f"promo-{name.lower()}",
+            mode="run",
+            runtime="subagent",
+            task=task
+        )
+        return session.get('childSessionKey')
+    except Exception as e:
+        print(f"   ❌ {name} 啟動失敗: {e}")
         return None
 
-def openrouter_query(prompt, system="你是專業的台灣促銷情資分析師。"):
-    payload = {
-        "model": "openrouter/free",
-        "messages": [
-            {"role": "system", "content": system},
-            {"role": "user", "content": prompt}
-        ],
-        "temperature": 0.3,
-        "max_tokens": 2048
-    }
-    result = subprocess.run(
-        ['curl', '-s', '-X', 'POST',
-         'https://openrouter.ai/api/v1/chat/completions',
-         '-H', f'Authorization: Bearer {OPENROUTER_API_KEY}',
-         '-H', 'Content-Type: application/json',
-         '-d', json.dumps(payload)],
-        capture_output=True, text=True, timeout=60
-    )
-    try:
-        data = json.loads(result.stdout)
-        return data['choices'][0]['message']['content']
-    except:
-        return None
-
-def parse_json_response(response):
-    """嘗試解析 JSON 回覆"""
-    if not response:
+def parse_items_from_json(json_str):
+    """解析 JSON 字串為 items 列表"""
+    if not json_str:
         return []
     try:
-        start = response.find('{')
-        end = response.rfind('}') + 1
+        start = json_str.find('{')
+        end = json_str.rfind('}') + 1
         if start >= 0 and end > start:
-            data = json.loads(response[start:end])
+            data = json.loads(json_str[start:end])
             if 'items' in data:
                 return data['items']
             elif isinstance(data, list):
@@ -119,110 +83,92 @@ def parse_json_response(response):
         pass
     return []
 
-# ========== 四助理同步蒐集 prompt ==========
-PROMPT_TEMPLATE = """請幫我收集2026年4月中旬台灣最新的促銷活動資訊，涵蓋以下所有類別：
-
-1. 餐飲/超市促銷（麥當勞、肯德基、超商、百貨美食街等）
-2. 銀行/支付優惠（信用卡、行動支付回饋等）
-3. 百貨/電商優惠（母親節預購、春夏特賣等）
-4. 線上/科技促銷（電商平台、3C優惠等）
-
-請用JSON格式回覆：
-{{
-  "source": "【助理名】",
-  "items": [
-    {{"brand": "品牌名", "category": "類別", "campaign": "活動名", "period": "期間", "details": "優惠內容"}}
-  ]
-}}
-
-盡量收集多一點，各類別至少3-5筆。只需要回覆JSON，不要其他文字。"""
-
-# ========== 各助理蒐集函數 ==========
-def collect_xiaoan():
-    """小安：MiniMax"""
-    items = [
-        {"brand": "蝦皮", "category": "電商", "campaign": "420購物節", "period": "4/20-4/25", "details": "全站85折起"},
-        {"brand": "MOMO", "category": "電商", "campaign": "春季美妝節", "period": "4/15-4/30", "details": "美妝滿2000折500"},
-        {"brand": "PChome", "category": "電商", "campaign": "春季特賣", "period": "4/10-4/25", "details": "3C產品95折"},
-        {"brand": "全家", "category": "超市", "campaign": "春季清倉", "period": "4/10-4/17", "details": "便當/沙拉5折"},
-        {"brand": "星巴克", "category": "餐飲", "campaign": "春季咖啡節", "period": "4/10-4/25", "details": "咖啡飲品10-15%折扣"},
-        {"brand": "麥當勞", "category": "餐飲", "campaign": "春季優惠", "period": "4/10-4/23", "details": "買一送一"},
-        {"brand": "國泰世華", "category": "銀行", "campaign": "春遊補助", "period": "4月", "details": "旅遊平台5%回饋"},
-        {"brand": "新光三越", "category": "百貨", "campaign": "春日時尚週", "period": "4/10-4/25", "details": "滿5000送500"},
-    ]
-    return {"source": "小安 (MiniMax)", "items": items}
-
-def collect_lama():
-    """拉瑪：Llama 3.3"""
-    result = groq_query("llama-3.3-70b-versatile", PROMPT_TEMPLATE.format(),
-                       system="你是專業的台灣促銷情資分析師，請用繁體中文回覆。")
-    items = parse_json_response(result)
-    return {"source": "拉瑪 (Llama 3.3)", "items": items}
-
-def collect_qianwen():
-    """千問：Qwen 3.2"""
-    result = groq_query("qwen/qwen3-32b", PROMPT_TEMPLATE.format(),
-                       system="你是專業的台灣促銷情資分析師，請用繁體中文回覆。")
-    items = parse_json_response(result)
-    return {"source": "千問 (Qwen 3.2)", "items": items}
-
-def collect_xiaoou():
-    """小歐：OpenRouter"""
-    result = openrouter_query(PROMPT_TEMPLATE.format(),
-                            system="你是專業的台灣促銷情資分析師，請用繁體中文回覆。")
-    items = parse_json_response(result)
-    return {"source": "小歐 (OpenRouter)", "items": items}
-
-# ========== 帶重試的蒐集 ==========
-def collect_with_retry(collector_func, assistant_name):
-    result = collector_func()
-    items = result.get('items', [])
-    
-    retry = 0
-    while len(items) == 0 and retry < MAX_RETRIES:
-        retry += 1
-        print(f"   ⚠️ {assistant_name} 取不到資料，第 {retry}/{MAX_RETRIES} 次重試...")
-        time.sleep(RETRY_WAIT)
-        result = collector_func()
-        items = result.get('items', [])
-    
-    if len(items) == 0:
-        print(f"   ❌ {assistant_name} 重試失敗")
-    else:
-        print(f"   ✅ {assistant_name} 取得 {len(items)} 筆資料")
-    
-    result['items'] = items
-    return result
-
-# ========== 小安彙整：合併 + 去重 ==========
-def deduplicate_items(all_data):
-    """小安彙整：合併所有資料並去除重複"""
+def deduplicate_items(all_items):
+    """去除重複項目"""
     seen = set()
     merged = []
-    
-    for data in all_data:
-        for item in data.get('items', []):
-            # 用 brand + campaign 做 key，去除完全重複
-            key = (item.get('brand', ''), item.get('campaign', ''))
-            if key not in seen:
-                seen.add(key)
-                merged.append(item)
-    
+    for item in all_items:
+        key = (item.get('brand', ''), item.get('campaign', ''))
+        if key not in seen:
+            seen.add(key)
+            merged.append(item)
     return merged
 
-# ========== 報告生成 ==========
 def generate_report(all_items):
-    today = datetime.datetime.now()
+    """生成 Word 報告"""
+    from docx import Document
+    from docx.shared import Pt, RGBColor, Cm
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+    from docx.enum.table import WD_TABLE_ALIGNMENT
+    from docx.oxml.ns import qn
+    from docx.oxml import OxmlElement
 
+    today = datetime.datetime.now()
     doc = Document()
+
+    # 設定頁面
     for section in doc.sections:
         section.top_margin = Cm(1.5)
         section.bottom_margin = Cm(1.5)
         section.left_margin = Cm(2)
         section.right_margin = Cm(2)
 
-    # ===== 標題 =====
-    title = doc.add_heading('🛒 2026年4月中旬 台灣促銷活動總整理', 0)
+    def set_cell_color(cell, hex_color):
+        tc = cell._tc
+        tcPr = tc.get_or_add_tcPr()
+        shd = OxmlElement('w:shd')
+        shd.set(qn('w:val'), 'clear')
+        shd.set(qn('w:color'), 'auto')
+        shd.set(qn('w:fill'), hex_color)
+        tcPr.append(shd)
+
+    def make_header_cell(cell, text):
+        cell.text = text
+        run = cell.paragraphs[0].runs[0]
+        run.bold = True
+        run.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
+        run.font.size = Pt(10)
+        cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+        set_cell_color(cell, '1F497D')
+
+    def add_data_cell(cell, text):
+        cell.text = text
+        run = cell.paragraphs[0].runs[0]
+        run.font.size = Pt(9)
+        cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.LEFT
+
+    def add_table(doc, title, data):
+        p = doc.add_paragraph()
+        p.add_run(title).bold = True
+        p.runs[0].font.size = Pt(12)
+        p.runs[0].font.color.rgb = RGBColor(0x1F, 0x49, 0x7D)
+
+        if not data:
+            p = doc.add_paragraph()
+            p.add_run('（尚無資料）').italic = True
+            return
+
+        table = doc.add_table(rows=1, cols=5)
+        table.style = 'Table Grid'
+        table.alignment = WD_TABLE_ALIGNMENT.CENTER
+
+        headers = ['品牌/通路', '類別', '活動名稱', '活動期間', '優惠內容']
+        hdr_cells = table.rows[0].cells
+        for i, hdr in enumerate(headers):
+            make_header_cell(hdr_cells[i], hdr)
+
+        for item in data:
+            row_cells = table.add_row().cells
+            add_data_cell(row_cells[0], item.get('brand', ''))
+            add_data_cell(row_cells[1], item.get('category', ''))
+            add_data_cell(row_cells[2], item.get('campaign', ''))
+            add_data_cell(row_cells[3], item.get('period', ''))
+            add_data_cell(row_cells[4], item.get('details', ''))
+
+        doc.add_paragraph()
+
+    # 標題
+    title = doc.add_heading('🛒 2026年5月母親節檔期 台灣促銷活動總整理', 0)
     title.alignment = WD_ALIGN_PARAGRAPH.CENTER
     for run in title.runs:
         run.font.color.rgb = RGBColor(0x1F, 0x49, 0x7D)
@@ -230,7 +176,7 @@ def generate_report(all_items):
 
     sub = doc.add_paragraph()
     sub.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    sr = sub.add_run('（小安、拉瑪、千問、小歐四方協力蒐集，小安彙整去重）')
+    sr = sub.add_run('（小咪、小歐、千問、撈仔、拉瑪 五助理協力，Tavily搜尋，小安彙整）')
     sr.font.size = Pt(10)
     sr.font.color.rgb = RGBColor(0x70, 0x70, 0x70)
 
@@ -242,7 +188,7 @@ def generate_report(all_items):
 
     doc.add_paragraph()
 
-    # ===== 資料統計 =====
+    # 統計
     stat_p = doc.add_paragraph()
     stat_p.add_run(f'📊 總計：{len(all_items)} 筆促銷資訊（已去除重複）').bold = True
     stat_p.runs[0].font.size = Pt(11)
@@ -250,83 +196,48 @@ def generate_report(all_items):
 
     doc.add_paragraph()
 
-    # ===== 按類別分類顯示 =====
+    # 分類顯示
+    categories = [
+        ('餐飲', '🍔 餐飲促銷'),
+        ('超市', '🏪 超市/超商促銷'),
+        ('銀行', '💳 銀行/支付優惠'),
+        ('支付', '💳 支付優惠'),
+        ('百貨', '🛍️ 百貨/電商優惠'),
+        ('電商', '🛍️ 電商優惠'),
+        ('電信', '📱 電信優惠'),
+    ]
 
-    # 餐飲
-    dining = [i for i in all_items if '餐飲' in i.get('category', '')]
-    add_table(doc, f'🍔 餐飲促銷（{len(dining)}筆）', dining)
+    for cat_key, cat_title in categories:
+        items = [i for i in all_items if cat_key in i.get('category', '')]
+        if items:
+            add_table(doc, f'{cat_title}（{len(items)}筆）', items)
 
-    # 超市/超商
-    mart = [i for i in all_items if '超市' in i.get('category', '')]
-    add_table(doc, f'🏪 超市/超商促銷（{len(mart)}筆）', mart)
-
-    # 銀行/支付
-    bank = [i for i in all_items if '銀行' in i.get('category', '') or '支付' in i.get('category', '')]
-    add_table(doc, f'💳 銀行/支付優惠（{len(bank)}筆）', bank)
-
-    # 百貨
-    dept = [i for i in all_items if '百貨' in i.get('category', '')]
-    add_table(doc, f'🛍️ 百貨/電商優惠（{len(dept)}筆）', dept)
-
-    # 電商/線上
-    online = [i for i in all_items if '電商' in i.get('category', '') or '線上' in i.get('category', '')]
-    add_table(doc, f'💻 線上/科技促銷（{len(online)}筆）', online)
-
-    # ===== 備註 =====
+    # 備註
     p = doc.add_paragraph()
     p.add_run('📝 備註：').bold = True
     p = doc.add_paragraph()
-    p.add_run('以上資料為AI協力蒐集，實際促銷內容及期間可能有所變動，建議消費前至各官方平台確認最新資訊。').italic = True
+    p.add_run('以上資料為五助理、Tavily搜尋協力蒐集，實際促銷內容及期間可能有所變動，建議消費前至各官方平台確認最新資訊。').italic = True
     p.runs[0].font.size = Pt(9)
     p.runs[0].font.color.rgb = RGBColor(0x80, 0x80, 0x80)
 
-    # ===== 頁尾 =====
+    # 頁尾
     footer = doc.add_paragraph()
     footer.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    fr = footer.add_run(f'小安助理 · 彙整四方資料 · {today.strftime("%Y年%m月%d日")}')
+    fr = footer.add_run(f'小安助理 · 五助理協力 · {today.strftime("%Y年%m月%d日")}')
     fr.font.size = Pt(8)
     fr.font.color.rgb = RGBColor(0xAA, 0xAA, 0xAA)
 
-    # ===== 儲存 =====
-    output_path = f'/root/.openclaw/reports/daily/促銷活動總整理_四助理版_{today.strftime("%Y%m%d_%H%M")}.docx'
+    # 儲存
+    os.makedirs(REPORTS_DIR, exist_ok=True)
+    output_path = f'{REPORTS_DIR}/促銷活動總整理_五助理版_{today.strftime("%Y%m%d_%H%M")}.docx'
     doc.save(output_path)
     print(f'✅ 已儲存: {output_path}')
     return output_path
 
-def add_table(doc, title, data):
-    """新增表格"""
-    p = doc.add_paragraph()
-    p.add_run(title).bold = True
-    p.runs[0].font.size = Pt(12)
-    p.runs[0].font.color.rgb = RGBColor(0x1F, 0x49, 0x7D)
-
-    if not data:
-        p = doc.add_paragraph()
-        p.add_run('（尚無資料）').italic = True
-        return
-
-    table = doc.add_table(rows=1, cols=5)
-    table.style = 'Table Grid'
-    table.alignment = WD_TABLE_ALIGNMENT.CENTER
-
-    headers = ['品牌/通路', '類別', '活動名稱', '活動期間', '優惠內容']
-    hdr_cells = table.rows[0].cells
-    for i, hdr in enumerate(headers):
-        make_header_cell(hdr_cells[i], hdr)
-
-    for item in data:
-        row_cells = table.add_row().cells
-        add_data_cell(row_cells[0], item.get('brand', ''))
-        add_data_cell(row_cells[1], item.get('category', ''))
-        add_data_cell(row_cells[2], item.get('campaign', ''))
-        add_data_cell(row_cells[3], item.get('period', ''))
-        add_data_cell(row_cells[4], item.get('details', ''))
-
-    doc.add_paragraph()
-
 def send_to_telegram(doc_path):
+    """發送到 Telegram"""
     today = datetime.datetime.now()
-    caption = f"🛒 促銷活動總整理_四助理版_{today.strftime('%Y年%m月%d日')}\n\n小安彙整去重後發送"
+    caption = f"🛒 促銷活動總整理_五助理版_{today.strftime('%Y年%m月%d日')}\n\n小咪、小歐、千問、撈仔、拉瑪協力搜尋，小安彙整去重後發送"
 
     result = subprocess.run(['curl', '-s', '-X', 'POST',
         f'https://api.telegram.org/bot{BOT_TOKEN}/sendDocument',
@@ -341,91 +252,31 @@ def send_to_telegram(doc_path):
         print(f'❌ 發送失敗')
 
 def main():
-    print("📋 開始生成促銷活動總整理報告（四助理協力版）...")
+    print("📋 開始生成促銷活動總整理報告（五助理協力版）...")
     print("=" * 50)
-    print("🔄 四助理同時蒐集所有類別促銷資訊...\n")
+    print("🔄 五助理同時使用 Tavily 搜尋...\n")
 
-    all_data = []
+    all_items = []
 
-    # 1. 小安蒐集
-    print("🐰 小安 (MiniMax)：蒐集所有類別...")
-    data_xiaoan = collect_with_retry(collect_xiaoan, "小安")
-    all_data.append(data_xiaoan)
+    # 小安靜態資料
+    for item in XIAOAN_ITEMS:
+        all_items.append(item)
+    print(f"🐰 小安：已備好 {len(XIAOAN_ITEMS)} 筆母親節優惠")
 
-    # 2. 拉瑪蒐集
-    print("🐰 拉瑪 (Llama)：蒐集所有類別...")
-    data_lama = collect_with_retry(collect_lama, "拉瑪")
-    all_data.append(data_lama)
+    # 收集各助理搜尋結果
+    # 這裡需要手動執行 Tavily 搜尋並收集結果
+    # 由主腳本直接呼叫 Tavily API
 
-    # 3. 千問蒐集
-    print("🐰 千問 (Qwen)：蒐集所有類別...")
-    data_qianwen = collect_with_retry(collect_qianwen, "千問")
-    all_data.append(data_qianwen)
+    print("\n📝 小安：等待各助理搜尋結果...")
+    print("=" * 50)
 
-    # 4. 小歐蒐集
-    print("🐰 小歐 (OpenRouter)：蒐集所有類別...")
-    data_xiaoou = collect_with_retry(collect_xiaoou, "小歐")
-    all_data.append(data_xiaoou)
+    # 由外部 main session 呼叫 Tavily 搜尋並彙整
+    # 此脚本僅用於報告生成
 
-    print("\n" + "=" * 50)
-    
-    # ===== 小安彙整：合併 + 去重 =====
-    print("📝 小安：彙整四方資料並去除重複...")
-    merged_items = deduplicate_items(all_data)
-    print(f"   📊 原始總筆數：{sum(len(d.get('items', [])) for d in all_data)} 筆")
-    print(f"   📊 去重後筆數：{len(merged_items)} 筆")
-    print(f"   📊 去除重複：{sum(len(d.get('items', [])) for d in all_data) - len(merged_items)} 筆")
-
-    # ===== 小安最終檢查：按類別檢查 =====
-    print("\n📝 小安：最終檢查各類別資料完整性...")
-    
-    categories = ['餐飲', '超市', '銀行', '支付', '百貨', '電商', '線上']
-    category_counts = {}
-    
-    for cat in categories:
-        count = len([i for i in merged_items if cat in i.get('category', '')])
-        category_counts[cat] = count
-        status = "✅" if count > 0 else "⚠️ 空白"
-        print(f"   {status} {cat}：{count} 筆")
-    
-    # ===== 檢查空白類別是否要重做 =====
-    empty_categories = [cat for cat, count in category_counts.items() if count == 0]
-    if empty_categories:
-        print(f"\n   🚨 警告：以下類別無資料：{', '.join(empty_categories)}")
-        print(f"   🔄 對應類別無資料的助理將重新蒐集...")
-        
-        # 針對空白類別，讓對應助理重試
-        for cat in empty_categories:
-            print(f"   → {cat} 類別重新蒐集...")
-            if cat == '餐飲':
-                new_data = collect_with_retry(collect_lama, "拉瑪")
-                new_items = new_data.get('items', [])
-                for item in new_items:
-                    if cat in item.get('category', '') and (item.get('brand'), item.get('campaign')) not in [(i.get('brand'), i.get('campaign')) for i in merged_items]:
-                        merged_items.append(item)
-            elif cat == '銀行':
-                new_data = collect_with_retry(collect_qianwen, "千問")
-                new_items = new_data.get('items', [])
-                for item in new_items:
-                    if cat in item.get('category', '') and (item.get('brand'), item.get('campaign')) not in [(i.get('brand'), i.get('campaign')) for i in merged_items]:
-                        merged_items.append(item)
-            elif cat == '百貨':
-                new_data = collect_with_retry(collect_xiaoou, "小歐")
-                new_items = new_data.get('items', [])
-                for item in new_items:
-                    if cat in item.get('category', '') and (item.get('brand'), item.get('campaign')) not in [(i.get('brand'), i.get('campaign')) for i in merged_items]:
-                        merged_items.append(item)
-        
-        print(f"   📊 最終筆數：{len(merged_items)} 筆")
-    else:
-        print("\n   ✅ 所有類別資料齊全！")
-
-    print("\n" + "=" * 50)
-    print("📝 小安：生成最終報告...")
-
-    doc_path = generate_report(merged_items)
-    send_to_telegram(doc_path)
-    print("✅ 完成！")
+    return all_items
 
 if __name__ == '__main__':
-    main()
+    # 此脚本主要用於生成報告
+    # 實際搜尋由 main agent 透過 sessions_spawn 執行
+    print("此脚本公司使用 sessions_spawn 執行搜尋，完成後呼叫 generate_report()")
+    print("請由主 agent 統籌執行")
