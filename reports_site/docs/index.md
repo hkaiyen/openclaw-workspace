@@ -1,15 +1,27 @@
 <style>
-.md-content p, .md-content, .md-typeset p, .md-typeset {
+/_ === 全站統一字體大小 === _/
+
+/_ 全部文字統一為 22px _/
+html, body, .md-typeset, .md-typeset p, .md-typeset li, .md-typeset span,
+.md-content, .md-content p, .md-content li,
+.md-nav, .md-nav__link, .md-sidebar,
+.md-footer, .md-footer-copyright, .md-copyright,
+.md-typeset h1, .md-typeset h2, .md-typeset h3, .md-typeset h4,
+.md-content h1, .md-content h2, .md-content h3, .md-content h4,
+.md-typeset table, .md-typeset td, .md-typeset th,
+.md-typeset a, .md-content a,
+.md-typeset ul, .md-typeset ol {
     font-size: 22px !important;
     line-height: 1.8 !important;
 }
-.md-typeset h1, .md-content h1 { font-size: 1.6em !important; font-weight: bold !important; }
-.md-typeset h2, .md-content h2 { font-size: 1.4em !important; font-weight: bold !important; }
-.md-typeset h3, .md-content h3 { font-size: 1.5em !important; font-weight: bold !important; }
-.md-typeset table, .md-typeset td, .md-typeset th { font-size: 22px !important; }
-.md-typeset a, .md-content a { font-size: 22px !important; }
-.md-nav__link, .md-nav__item, .md-nav__link--active { font-size: 24px !important; }
-.md-typeset ul, .md-typeset ol { font-size: 22px !important; }
+
+/_ H1 首頁標題特別放大 _/
+.md-typeset h1, .md-content h1 {
+    font-size: 2.5em !important;
+    font-weight: bold !important;
+}
+
+/_ 保持一致性：所有標題都用 22px _/
 </style>
 
 # 川寶每日報告

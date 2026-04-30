@@ -49,73 +49,7 @@ def get_housing_data():
 
 
 
-def upload_to_website(file_path):
-    """將報告上傳到網站分類"""
-    import subprocess
-    from docx import Document
-    
-    try:
-        doc = Document(file_path)
-        today = datetime.datetime.now()
-        
-        # 根據報告類型決定分類
-        category = "研究"  # 預設分類
-        if "資產報酬率" in file_path or "股市" in file_path or "股票" in file_path:
-            category = "股市"
-        elif "房地產" in file_path or "房價" in file_path:
-            category = "房地產"
-        elif "促銷" in file_path or "活動" in file_path:
-            category = "促銷"
-        
-        # 產生Markdown檔名
-        md_filename = f"2026年資產報酬率報告_{today.strftime('%Y%m%d_%H%M')}.md"
-        md_path = f"/root/.openclaw/workspace/reports_site/docs/reports/{category}/{md_filename}"
-        
-        # 讀取docx內容並轉換為markdown
-        md_content = ["# 📊 2026年各資產報酬率報告\n"]
-        md_content.append(f"**報告日期：** {today.strftime('%Y年%m月%d日')}\n")
-        md_content.append(f"**資料區間：** 2026年01月01日 ～ {today.strftime('%Y年%m月%d日')}\n")
-        md_content.append("\n---\n")
-        
-        for para in doc.paragraphs:
-            text = para.text.strip()
-            if text:
-                md_content.append(f"{text}\n")
-        
-        for table in doc.tables:
-            rows_data = []
-            for row in table.rows:
-                cells = [cell.text.strip() for cell in row.cells]
-                rows_data.append(" | ".join(cells))
-            md_content.append("\n| " + " | ".join(["---"] * len(table.columns)) + " |\n")
-            for row in rows_data:
-                md_content.append(f"| {row} |\n")
-            md_content.append("\n")
-        
-        with open(md_path, 'w', encoding='utf-8') as f:
-            f.write("\n".join(md_content))
-        
-        print(f"   📤 已上傳到: {category}/{md_filename}")
-        
-        # Git commit and push
-        try:
-            subprocess.run(['git', 'add', '.'], cwd='/root/.openclaw/workspace/reports_site', check=True, capture_output=True)
-            subprocess.run(['git', 'commit', '-m', f'自動更新：{category}報告 {today.strftime("%Y%m%d %H:%M")}'], 
-                         cwd='/root/.openclaw/workspace/reports_site', check=True, capture_output=True)
-            subprocess.run(['git', 'push', 'origin', 'master'], 
-                          cwd='/root/.openclaw/workspace/reports_site', check=True, capture_output=True, timeout=30)
-            print("   ✅ 已推送到 GitHub，網站將自動更新")
-            return True
-        except Exception as e:
-            print(f"   ⚠️ Git推送失敗: {e}")
-            return False
-            
-    except Exception as e:
-        print(f"   ⚠️ 上傳失敗: {e}")
-        return False
-
-
-
+from upload_website import upload_to_website, update_index_page
 def get_yahoo_data(ticker, start_date="2026-01-01"):
     try:
         import yfinance as yf
