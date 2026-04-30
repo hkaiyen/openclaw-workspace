@@ -253,25 +253,6 @@
   
   
     <li class="md-tabs__item">
-      <a href="reports/%E6%88%BF%E5%9C%B0%E7%94%A2/" class="md-tabs__link">
-        
-  
-  
-    
-  
-  🏠 房地產
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
       <a href="reports/%E4%BF%83%E9%8A%B7/" class="md-tabs__link">
         
   
@@ -432,17 +413,6 @@
   <a href="#_4" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🏠 房地產
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
-    <span class="md-ellipsis">
-      
         🛒 促銷活動
       
     </span>
@@ -451,7 +421,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#_6" class="md-nav__link">
+  <a href="#_5" class="md-nav__link">
     <span class="md-ellipsis">
       
         📚 研究報告
@@ -467,7 +437,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_7" class="md-nav__link">
+  <a href="#_6" class="md-nav__link">
     <span class="md-ellipsis">
       
         🔄 自動更新
@@ -478,7 +448,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_8" class="md-nav__link">
+  <a href="#_7" class="md-nav__link">
     <span class="md-ellipsis">
       
         📝 報告分類
@@ -511,33 +481,6 @@
     
   
     📈 股市與投資
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="reports/%E6%88%BF%E5%9C%B0%E7%94%A2/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    🏠 房地產
   
 
     
@@ -635,7 +578,7 @@ html, body, .md-typeset, .md-typeset p, .md-typeset li, .md-typeset span,
 .md-typeset a, .md-content a,
 .md-typeset ul, .md-typeset ol {
     font-size: 22px !important;
-    line-height: 1.8 !important;
+    line-height: 1.5 !important;
 }
 
 /_ H1 首頁標題特別放大 _/
@@ -644,7 +587,102 @@ html, body, .md-typeset, .md-typeset p, .md-typeset li, .md-typeset span,
     font-weight: bold !important;
 }
 
-/_ 保持一致性：所有標題都用 22px _/
+/_ === 手機版優化 === _/
+
+/_ 平板以下尺寸 _/
+@media screen and (max-width: 1220px) {
+    /* 調整側邊欄 */
+    .md-sidebar {
+        display: none !important;
+    }
+
+    /* 內容區域全寬 */
+    .md-content {
+        width: 100% !important;
+        padding: 20px !important;
+    }
+
+    /* 導航改為垂直選單 */
+    .md-nav__list {
+        display: block !important;
+    }
+
+    /* 報告連結更好點擊 */
+    .md-content a {
+        padding: 10px 0 !important;
+        display: block !important;
+    }
+}
+
+/_ 手機版（768px以下） _/
+@media screen and (max-width: 768px) {
+    /* 統一文字大小 */
+    html, body, .md-typeset, .md-typeset p, 
+    .md-content p, .md-content li,
+    .md-nav, .md-nav__link {
+        font-size: 18px !important;
+    }
+
+    /* 標題縮小 */
+    .md-typeset h1, .md-content h1 {
+        font-size: 1.8em !important;
+    }
+    .md-typeset h2, .md-content h2 {
+        font-size: 1.4em !important;
+    }
+    .md-typeset h3, .md-content h3 {
+        font-size: 1.2em !important;
+    }
+
+    /* 表格橫向滾動 */
+    .md-typeset table {
+        font-size: 16px !important;
+        display: block;
+        overflow-x: auto;
+    }
+
+    /* 內容區域 */
+    .md-content {
+        padding: 15px !important;
+    }
+
+    /* 連結間距 */
+    .md-content li {
+        padding: 8px 0 !important;
+    }
+
+    /* 頂部導航摺疊 */
+    .md-topbar {
+        padding: 10px !important;
+    }
+}
+
+/_ 小手機（480px以下） _/
+@media screen and (max-width: 480px) {
+    /* 進一步縮小文字 */
+    html, body {
+        font-size: 16px !important;
+    }
+
+    /* 標題更小 */
+    .md-typeset h1 {
+        font-size: 1.2em !important;
+    }
+    .md-typeset h2 {
+        font-size: 1.2em !important;
+    }
+
+    /* 表格字體 */
+    .md-typeset table {
+        font-size: 14px !important;
+    }
+
+    /* 按鈕更大 */
+    .md-content a {
+        padding: 12px !important;
+        margin: 5px 0 !important;
+    }
+}
 </style>
 
 <h1 id="_1">川寶每日報告<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
@@ -654,22 +692,20 @@ html, body, .md-typeset, .md-typeset p, .md-typeset li, .md-typeset span,
 <ul>
 <li><a href="reports/%E8%82%A1%E5%B8%82/2026%E5%B9%B4%E8%B3%87%E7%94%A2%E5%A0%B1%E9%85%AC%E7%8E%87%E5%A0%B1%E5%91%8A_20260501_0000/">2026年資產報酬率報告_20260501_0000</a></li>
 </ul>
-<h3 id="_4">🏠 房地產<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
-<h3 id="_5">🛒 促銷活動<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<h3 id="_4">🛒 促銷活動<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
 <ul>
 <li><a href="reports/%E4%BF%83%E9%8A%B7/%E4%BF%83%E9%8A%B7%E6%B4%BB%E5%8B%95%E7%B8%BD%E6%95%B4%E7%90%86_%E5%85%AD%E5%8A%A9%E7%90%86%E7%89%88_20260430_1217/">促銷活動總整理_六助理版_20260430_1217</a></li>
 </ul>
-<h3 id="_6">📚 研究報告<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<h3 id="_5">📚 研究報告<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
 <ul>
 <li><a href="reports/%E7%A0%94%E7%A9%B6/%E9%81%A0%E8%B7%9D%E5%B7%A5%E4%BD%9C%E8%88%87%E8%87%AA%E7%94%B1%E5%B7%A5%E4%BD%9C%E8%80%85%E7%94%9F%E6%B4%BB%E8%B6%A8%E5%8B%A2_20260429/">遠距工作與自由工作者生活趨勢_20260429</a></li>
 </ul>
 <hr />
-<h2 id="_7">🔄 自動更新<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<h2 id="_6">🔄 自動更新<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
 <p>本網站每日自動更新，報告會在生成後自動同步到這裡。</p>
-<h2 id="_8">📝 報告分類<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h2>
+<h2 id="_7">📝 報告分類<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>📈 股市與投資</strong> - 股市分析、資產報酬率、股票策略</li>
-<li><strong>🏠 房地產</strong> - 房價指數、房地產趨勢</li>
 <li><strong>🛒 促銷活動</strong> - 最新優惠、母親節檔期</li>
 <li><strong>📚 研究報告</strong> - 深度研究、趨勢分析</li>
 </ul>
