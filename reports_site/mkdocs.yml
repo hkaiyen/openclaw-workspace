@@ -23,13 +23,9 @@ theme:
     code: Roboto Mono
   features:
     - navigation.instant
-    - navigation.tracking
-    - navigation.tabs
-    - navigation.sections
     - toc.integrate
     - search.suggest
     - search.highlight
-    - content.code.copy
 
 extra_css:
   - stylesheets/extra.css

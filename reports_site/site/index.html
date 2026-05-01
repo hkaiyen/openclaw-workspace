@@ -90,7 +90,9 @@
     
       
 
-<header class="md-header" data-md-component="header">
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="页眉">
     <a href="." title="川寶每日報告" class="md-header__button md-logo" aria-label="川寶每日報告" data-md-component="logo">
       
@@ -202,93 +204,6 @@
       
         
           
-            
-<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
-  <div class="md-grid">
-    <ul class="md-tabs__list">
-      
-        
-  
-  
-  
-    
-  
-  
-    <li class="md-tabs__item md-tabs__item--active">
-      <a href="." class="md-tabs__link">
-        
-  
-  
-    
-  
-  首頁
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="reports/%E8%82%A1%E5%B8%82/" class="md-tabs__link">
-        
-  
-  
-    
-  
-  📈 股市與投資
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="reports/%E4%BF%83%E9%8A%B7/" class="md-tabs__link">
-        
-  
-  
-    
-  
-  🛒 促銷活動
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="reports/%E7%A0%94%E7%A9%B6/" class="md-tabs__link">
-        
-  
-  
-    
-  
-  📚 研究報告
-
-      </a>
-    </li>
-  
-
-      
-    </ul>
-  </div>
-</nav>
-          
         
       
       <main class="md-main" data-md-component="main">
@@ -302,12 +217,10 @@
                     
 
 
-  
-
 
   
 
-<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="导航栏" data-md-level="0">
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="导航栏" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="." title="川寶每日報告" class="md-nav__button md-logo" aria-label="川寶每日報告" data-md-component="logo">
       
@@ -564,127 +477,6 @@
 
 
 
-<style>
-/_ === 全站統一字體大小 === _/
-
-/_ 全部文字統一為 22px _/
-html, body, .md-typeset, .md-typeset p, .md-typeset li, .md-typeset span,
-.md-content, .md-content p, .md-content li,
-.md-nav, .md-nav__link, .md-sidebar,
-.md-footer, .md-footer-copyright, .md-copyright,
-.md-typeset h1, .md-typeset h2, .md-typeset h3, .md-typeset h4,
-.md-content h1, .md-content h2, .md-content h3, .md-content h4,
-.md-typeset table, .md-typeset td, .md-typeset th,
-.md-typeset a, .md-content a,
-.md-typeset ul, .md-typeset ol {
-    font-size: 22px !important;
-    line-height: 1.5 !important;
-}
-
-/_ H1 首頁標題特別放大 _/
-.md-typeset h1, .md-content h1 {
-    font-size: 2.5em !important;
-    font-weight: bold !important;
-}
-
-/_ === 手機版優化 === _/
-
-/_ 平板以下尺寸 _/
-@media screen and (max-width: 1220px) {
-    /* 調整側邊欄 */
-    .md-sidebar {
-        display: none !important;
-    }
-
-    /* 內容區域全寬 */
-    .md-content {
-        width: 100% !important;
-        padding: 20px !important;
-    }
-
-    /* 導航改為垂直選單 */
-    .md-nav__list {
-        display: block !important;
-    }
-
-    /* 報告連結更好點擊 */
-    .md-content a {
-        padding: 10px 0 !important;
-        display: block !important;
-    }
-}
-
-/_ 手機版（768px以下） _/
-@media screen and (max-width: 768px) {
-    /* 統一文字大小 */
-    html, body, .md-typeset, .md-typeset p, 
-    .md-content p, .md-content li,
-    .md-nav, .md-nav__link {
-        font-size: 18px !important;
-    }
-
-    /* 標題縮小 */
-    .md-typeset h1, .md-content h1 {
-        font-size: 1.8em !important;
-    }
-    .md-typeset h2, .md-content h2 {
-        font-size: 1.4em !important;
-    }
-    .md-typeset h3, .md-content h3 {
-        font-size: 1.2em !important;
-    }
-
-    /* 表格橫向滾動 */
-    .md-typeset table {
-        font-size: 16px !important;
-        display: block;
-        overflow-x: auto;
-    }
-
-    /* 內容區域 */
-    .md-content {
-        padding: 15px !important;
-    }
-
-    /* 連結間距 */
-    .md-content li {
-        padding: 8px 0 !important;
-    }
-
-    /* 頂部導航摺疊 */
-    .md-topbar {
-        padding: 10px !important;
-    }
-}
-
-/_ 小手機（480px以下） _/
-@media screen and (max-width: 480px) {
-    /* 進一步縮小文字 */
-    html, body {
-        font-size: 16px !important;
-    }
-
-    /* 標題更小 */
-    .md-typeset h1 {
-        font-size: 1.2em !important;
-    }
-    .md-typeset h2 {
-        font-size: 1.2em !important;
-    }
-
-    /* 表格字體 */
-    .md-typeset table {
-        font-size: 14px !important;
-    }
-
-    /* 按鈕更大 */
-    .md-content a {
-        padding: 12px !important;
-        margin: 5px 0 !important;
-    }
-}
-</style>
-
 <h1 id="_1">川寶每日報告<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
 <p>歡迎使用川寶團隊每日報告網站！</p>
 <h2 id="_2">📊 最新報告<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
@@ -758,7 +550,7 @@ html, body, .md-typeset, .md-typeset p, .md-typeset li, .md-typeset span,
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "toc.integrate", "search.suggest", "search.highlight", "content.code.copy"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.instant", "toc.integrate", "search.suggest", "search.highlight"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
     
     
       <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
