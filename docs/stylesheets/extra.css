@@ -42,7 +42,7 @@ html, body {
 
 /* 新報告標記（← 符號） */
 .md-content a[href$=".docx"]::after {
-  content: " 📥";
+  
   font-size: 0.8em;
 }
 
