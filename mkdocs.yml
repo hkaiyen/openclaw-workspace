@@ -33,9 +33,10 @@ theme:
     - content.code.copy
 
 nav:
-  - 首頁: index.md
-  - 報告列表:
-    - reports/index.md
+  - 🏠 首頁: index.md
+  - 📈 股市報告: reports/股市.md
+  - 📚 研究報告: reports/研究.md
+  - 🛒 促銷報告: reports/促銷.md
 
 plugins:
   - search
