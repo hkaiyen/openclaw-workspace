@@ -1,7 +1,7 @@
 site_name: 川寶團隊每日報告
 site_description: 川寶團隊每日報告自動發布平台
 site_author: 川寶團隊
-site_url: https://site-delta-jade-91.vercel.app
+site_url: https://openclaw-workspace-dun.vercel.app
 
 theme:
   name: material
