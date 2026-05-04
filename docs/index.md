@@ -51,3 +51,11 @@
 
 *最後更新時間：2026-05-02 20:27*
 *總報告數：125 份（已去重）*
+<style>
+/* 左側導航選單字體 - 縮小 */
+.md-nav__link {
+  font-size: 18px !important;
+}
+.md-nav__item { font-size: 18px !important; }
+.md-nav__list { font-size: 18px !important; }
+</style>
