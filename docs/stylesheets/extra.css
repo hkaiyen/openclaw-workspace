@@ -1,7 +1,8 @@
 /* 川寶團隊每日報告 - 自訂樣式 */
 
-/* 桌面版字體大小 */
+/* 使用 CSS 變數控制導航字體 */
 :root {
+  --md-typescale-base: 0.9rem !important;
   --md-content-font-size: 22px;
   --md-content-line-height: 1.8;
 }
@@ -11,25 +12,34 @@ html, body {
   line-height: 1.8 !important;
 }
 
-/* 左側導航選單字體 - 縮小 */
-.md-nav .md-nav__link,
-.md-nav__link,
-.md-nav__list,
+/* 左側導航字體 - 縮小到 16px */
+.md-nav {
+  font-size: 16px !important;
+}
+
+.md-nav__link {
+  font-size: 16px !important;
+  padding: 4px 0 !important;
+}
+
+.md-nav__list {
+  font-size: 16px !important;
+}
+
 .md-nav__item {
   font-size: 16px !important;
 }
 
-/* 所有導航相關元素 */
-nav,
-.md-nav,
-.md-nav__inner,
-.md-nav__list,
-.md-nav__item,
-.md-nav__link {
+/* 導航層級 */
+.md-nav--primary .md-nav__link {
   font-size: 16px !important;
 }
 
-/* 主內容區域字體 */
+.md-nav--primary .md-nav__list {
+  font-size: 16px !important;
+}
+
+/* 主內容區域 */
 .md-content {
   font-size: 18px !important;
 }
@@ -38,80 +48,36 @@ nav,
 .md-content h1 { font-size: 1.6em !important; }
 .md-content h2 { font-size: 1.4em !important; }
 .md-content h3 { font-size: 1.5em !important; }
-.md-content h4 { font-size: 1.2em !important; }
-.md-content h5 { font-size: 1.1em !important; }
-.md-content h6 { font-size: 1.0em !important; }
 
-/* 報告下載連結樣式 */
-.md-content a[href$=".docx"] {
-  color: #1976D2 !important;
+/* 報告連結 - 保持可讀性 */
+.md-content a {
   font-size: 16px !important;
 }
 
-.md-content a[href$=".docx"]:hover {
-  color: #0D47A1 !important;
-  background-color: #E3F2FD;
-}
-
-/* 報告連結樣式 */
 .md-content li {
   font-size: 16px !important;
-  margin-bottom: 6px !important;
+  margin-bottom: 4px !important;
 }
 
-/* 報告清單 */
-.md-content ul {
+/* 報告下載連結 */
+.md-content a[href$=".docx"] {
   font-size: 16px !important;
+  color: #1976D2 !important;
 }
 
-/* 返回連結樣式 */
-.md-content a[href$="../"] {
-  color: #4CAF50 !important;
-  font-weight: bold;
-}
-
-/* 深色模式支援 */
+/* 深色模式 */
 @media (prefers-color-scheme: dark) {
   .md-content a[href$=".docx"] {
     color: #64B5F6 !important;
   }
-  .md-content a[href$=".docx"]:hover {
-    background-color: #1E3A5F;
-  }
 }
 
-/* 響應式設計 - 平板 */
-@media screen and (max-width: 768px) {
-  html, body {
-    font-size: 18px !important;
-  }
-}
-
-/* 響應式設計 - 手機 */
+/* 手機 */
 @media screen and (max-width: 480px) {
   html, body {
     font-size: 16px !important;
-    line-height: 1.6 !important;
   }
-  .md-header {
-    padding: 0 8px !important;
+  .md-nav__link {
+    font-size: 14px !important;
   }
-}
-
-/* 表格樣式 */
-.md-content table {
-  border-collapse: collapse;
-  width: 100%;
-  margin: 16px 0;
-}
-
-.md-content th, .md-content td {
-  border: 1px solid #ddd;
-  padding: 12px;
-  text-align: left;
-  font-size: 16px !important;
-}
-
-.md-content th {
-  background-color: #f5f5f5;
 }
