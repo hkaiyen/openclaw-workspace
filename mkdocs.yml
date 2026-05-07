@@ -33,8 +33,8 @@ theme:
     - content.code.copy
 
 nav:
-  - 📰 新聞快報: reports/新聞/全方位新聞快報_20260507_1507.html
   - 🏠 首頁: index.md
+  - 📰 新聞快報: reports/新聞/全方位新聞快報_20260507_1507.html
   - 📈 股市報告: reports/股市.md
   - 📚 研究報告: reports/研究.md
   - 💡 創業靈感: reports/創業.md
