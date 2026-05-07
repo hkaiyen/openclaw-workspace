@@ -1,7 +1,4 @@
 {
-  "buildCommand": "echo 'skip'",
-  "outputDirectory": "site",
-  "redirects": [
-    { "source": "/(.*)", "destination": "/reports/新聞/全方位新聞快報_20260507_1507.html", "permanent": false }
-  ]
+  "buildCommand": "bash build.sh",
+  "outputDirectory": "site"
 }
