@@ -1,4 +1,5 @@
 {
   "buildCommand": "bash build.sh",
-  "outputDirectory": "site"
+  "outputDirectory": "site",
+  "framework": null
 }
