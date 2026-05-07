@@ -1,277 +1,154 @@
-/* ============================================
-   小安研究團隊 - 網站美化
-   ============================================ */
+/* 小安研究團隊每日報告 - 自訂樣式 */
 
-/* 預設字體大小 */
+/* 使用 CSS 變數控制導航字體 */
 :root {
-  --md-typescale-base: 1rem !important;
-  --md-content-font-size: 17px;
-  --md-content-line-height: 1.9;
+  --md-typescale-base: 0.9rem !important;
+  --md-content-font-size: 22px;
+  --md-content-line-height: 1.8;
 }
 
-/* 頁面背景漸層 */
-html {
-  scroll-behavior: smooth;
+html, body {
+  font-size: 22px !important;
+  line-height: 1.8 !important;
 }
 
-body {
-  font-size: 17px !important;
-  line-height: 1.9 !important;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%) !important;
-}
-
-/* 頂部導航列 */
-.md-header {
-  background: linear-gradient(90deg, #1a237e 0%, #3949ab 100%) !important;
-  box-shadow: 0 2px 8px rgba(26,35,126,0.3) !important;
-}
-
-.md-header__inner {
-  padding: 0 10px !important;
-}
-
-/* 頂部標題 */
-.md-header__title {
-  font-weight: 700 !important;
-  font-size: 1.1rem !important;
-  color: #fff !important;
-}
-
-/* 頂部LOGO */
-.md-header__button {
-  color: #fff !important;
-}
-
-/* 左側導航選單 */
-.md-sidebar {
-  background: #fff !important;
-  box-shadow: 2px 0 8px rgba(0,0,0,0.08) !important;
+/* 左側導航字體 - 縮小到 16px */
+.md-nav {
+  font-size: 16px !important;
 }
 
 .md-nav__link {
-  font-size: 15px !important;
-  padding: 8px 12px !important;
-  border-radius: 6px !important;
-  margin: 2px 6px !important;
-  transition: all 0.2s ease !important;
+  font-size: 16px !important;
+  padding: 4px 0 !important;
 }
 
-.md-nav__link:hover {
-  background: linear-gradient(90deg, #e8eaf6 0%, #c5cae9 100%) !important;
-  color: #1a237e !important;
+.md-nav__list {
+  font-size: 16px !important;
 }
 
-.md-nav__link--active {
-  background: linear-gradient(90deg, #3949ab 0%, #5c6bc0 100%) !important;
-  color: #fff !important;
-  font-weight: 600 !important;
+.md-nav__item {
+  font-size: 16px !important;
 }
 
-/* 主要內容區 */
+/* 導航層級 */
+.md-nav--primary .md-nav__link {
+  font-size: 16px !important;
+}
+
+.md-nav--primary .md-nav__list {
+  font-size: 16px !important;
+}
+
+/* 主內容區域 */
 .md-content {
-  font-size: 17px !important;
-  line-height: 1.9 !important;
-  padding: 20px 30px !important;
-  background: #fff !important;
-  border-radius: 12px !important;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
-  margin: 16px !important;
+  font-size: 18px !important;
 }
 
-/* 標題樣式 */
-.md-content h1 {
-  font-size: 2rem !important;
-  font-weight: 800 !important;
-  color: #1a237e !important;
-  border-bottom: 3px solid #3949ab !important;
-  padding-bottom: 12px !important;
-  margin-bottom: 24px !important;
-  background: linear-gradient(90deg, #e8eaf6 0%, transparent 100%) !important;
-  padding: 16px 20px !important;
-  border-radius: 8px 8px 0 0 !important;
-}
+/* 標題大小 */
+.md-content h1 { font-size: 1.6em !important; }
+.md-content h2 { font-size: 1.4em !important; }
+.md-content h3 { font-size: 1.5em !important; }
 
-.md-content h2 {
-  font-size: 1.4rem !important;
-  font-weight: 700 !important;
-  color: #3949ab !important;
-  margin-top: 28px !important;
-  margin-bottom: 16px !important;
-  padding-left: 12px !important;
-  border-left: 4px solid #3949ab !important;
-}
-
-.md-content h3 {
-  font-size: 1.15rem !important;
-  color: #1a237e !important;
-  margin-top: 20px !important;
-}
-
-/* 報告連結卡片 */
-.md-content a[href$=".docx"] {
-  display: inline-block !important;
-  padding: 8px 16px !important;
-  margin: 4px 0 !important;
-  background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%) !important;
-  border-radius: 20px !important;
-  color: #1a237e !important;
-  text-decoration: none !important;
-  font-size: 15px !important;
-  transition: all 0.2s ease !important;
-  border: 1px solid #c5cae9 !important;
-}
-
-.md-content a[href$=".docx"]:hover {
-  background: linear-gradient(135deg, #3949ab 0%, #5c6bc0 100%) !important;
-  color: #fff !important;
-  transform: translateY(-2px) !important;
-  box-shadow: 0 4px 12px rgba(57,73,171,0.3) !important;
-}
-
-/* 普通連結 */
+/* 報告連結 - 保持可讀性 */
 .md-content a {
-  color: #3949ab !important;
-  text-decoration: none !important;
-  border-bottom: 1px dotted #3949ab !important;
-  transition: all 0.2s ease !important;
+  font-size: 16px !important;
 }
 
-.md-content a:hover {
-  color: #1a237e !important;
-  border-bottom: 2px solid #1a237e !important;
-}
-
-/* 報告列表 */
 .md-content li {
-  font-size: 15px !important;
-  margin-bottom: 6px !important;
-  padding-left: 4px !important;
+  font-size: 16px !important;
+  margin-bottom: 4px !important;
 }
 
-/* 水平線 */
-.md-content hr {
-  border: none !important;
-  height: 2px !important;
-  background: linear-gradient(90deg, #3949ab, #e8eaf6) !important;
-  margin: 24px 0 !important;
-  border-radius: 2px !important;
-}
-
-/* 分隔線 */
-.md-divider {
-  border-color: #c5cae9 !important;
-}
-
-/* 代碼區塊 */
-.md-content code {
-  background: #e8eaf6 !important;
-  color: #1a237e !important;
-  padding: 2px 6px !important;
-  border-radius: 4px !important;
-  font-size: 0.9em !important;
+/* 報告下載連結 */
+.md-content a[href$=".docx"] {
+  font-size: 16px !important;
+  color: #1976D2 !important;
 }
 
 /* 深色模式 */
 @media (prefers-color-scheme: dark) {
-  body {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
-    color: #e0e0e0 !important;
-  }
-  
-  .md-sidebar {
-    background: #1a1a2e !important;
-  }
-  
-  .md-content {
-    background: #1e2a3a !important;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.3) !important;
-  }
-  
-  .md-content h1 {
-    background: linear-gradient(90deg, #1e3a5f 0%, transparent 100%) !important;
-    color: #64b5f6 !important;
-    border-bottom-color: #1976D2 !important;
-  }
-  
-  .md-content h2 {
-    color: #64b5f6 !important;
-    border-left-color: #1976D2 !important;
-  }
-  
-  .md-content h3 {
-    color: #90caf9 !important;
-  }
-  
-  .md-nav__link:hover {
-    background: linear-gradient(90deg, #1e3a5f 0%, #1565C0 100%) !important;
-    color: #90caf9 !important;
-  }
-  
-  .md-nav__link--active {
-    background: linear-gradient(90deg, #1565C0 0%, #1976D2 100%) !important;
-    color: #fff !important;
-  }
-  
   .md-content a[href$=".docx"] {
-    background: linear-gradient(135deg, #1e3a5f 0%, #1565C0 100%) !important;
-    color: #90caf9 !important;
-    border-color: #1565C0 !important;
-  }
-  
-  .md-content a[href$=".docx"]:hover {
-    background: linear-gradient(135deg, #1976D2 0%, #2196F3 100%) !important;
-    color: #fff !important;
-  }
-  
-  .md-content code {
-    background: #1e3a5f !important;
-    color: #80deea !important;
-  }
-  
-  .md-content hr {
-    background: linear-gradient(90deg, #1976D2, #1e3a5f) !important;
+    color: #64B5F6 !important;
   }
 }
 
-/* 手機響應式 */
-@media screen and (max-width: 768px) {
-  .md-content {
-    padding: 16px !important;
-    margin: 8px !important;
-    border-radius: 8px !important;
+/* 手機 */
+@media screen and (max-width: 480px) {
+  html, body {
+    font-size: 16px !important;
   }
-  
-  .md-content h1 {
-    font-size: 1.5rem !important;
-    padding: 12px !important;
-  }
-  
-  .md-content h2 {
-    font-size: 1.2rem !important;
-  }
-  
-  .md-content h3 {
-    font-size: 1.05rem !important;
-  }
-  
   .md-nav__link {
     font-size: 14px !important;
-    padding: 6px 10px !important;
   }
+}
+
+/* ========== 響應式優化（新增）========== */
+
+/* 平板 */
+@media screen and (max-width: 768px) {
+  html, body {
+    font-size: 18px !important;
+  }
+  .md-content {
+    padding: 10px !important;
+  }
+  .md-content h1 { font-size: 1.4em !important; }
+  .md-content h2 { font-size: 1.2em !important; }
+}
+
+/* 鏈接樣式強化 */
+.md-content a {
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* 報告列表更緊湊 */
+.md-content li {
+  padding: 2px 0 !important;
 }
 
 /* 滾動條美化 */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: #f1f1f1;
 }
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #3949ab, #1a237e);
-  border-radius: 4px;
+  background: #ccc;
+  border-radius: 3px;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #5c6bc0, #3949ab);
+
+/* 深色模式加強 */
+@media (prefers-color-scheme: dark) {
+  html, body {
+    background-color: #1a1a1a !important;
+    color: #e0e0e0 !important;
+  }
+  .md-content {
+    background-color: #1a1a1a !important;
+  }
+  .md-content a {
+    color: #64B5F6 !important;
+  }
+  ::-webkit-scrollbar-track {
+    background: #2a2a2a;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #555;
+  }
+}
+
+/* 表格響應式 */
+.md-content table {
+  font-size: 15px !important;
+  overflow-x: auto !important;
+  display: block !important;
+}
+
+/* 圖片最大寬度 */
+.md-content img {
+  max-width: 100% !important;
+  height: auto !important;
 }
