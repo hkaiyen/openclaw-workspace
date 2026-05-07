@@ -1,9 +1,7 @@
 {
-  "buildCommand": "uv pip install --system mkdocs-material && mkdocs build",
+  "buildCommand": "echo 'skip'",
   "outputDirectory": "site",
-  "framework": null,
-  "installCommand": "uv pip install --system mkdocs-material",
-  "devCommand": "mkdocs serve",
-  "regions": ["iad1"],
-  "public": true
+  "redirects": [
+    { "source": "/(.*)", "destination": "/reports/新聞/全方位新聞快報_20260507_1507.html", "permanent": false }
+  ]
 }
