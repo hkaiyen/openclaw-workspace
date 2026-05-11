@@ -1,6 +1,7 @@
-site_name: 川寶團隊每日報告
-site_description: 川寶團隊每日報告自動發布平台
-site_author: 川寶團隊
+site_name: 小安研究團隊每日報告
+site_description: 小安研究團隊每日報告自動發布平台
+site_author: 小安研究團隊
+site_url: https://reportssite.vercel.app
 
 theme:
   name: material
@@ -35,9 +36,26 @@ nav:
   - 📈 股市與投資: reports/股市/index.md
   - 🛒 促銷活動: reports/促銷/index.md
   - 📚 研究報告: reports/研究/index.md
+  - 🎮 小遊戲: games/index.md
 
 plugins:
   - search
+  - rss:
+      enabled: true
+      rss_feed_enabled: true
+      json_feed_enabled: true
+      feeds_filenames:
+        rss_created: feed.xml
+        json_created: feed.json
+      use_git: true
+      length: 20
+      match_path: '.*'
+      date_from_meta:
+        as_creation: git
+        as_update: git
+        datetime_format: '%Y-%m-%d'
+      categories: []
+  - print-site
 
 markdown_extensions:
   - pymdownx.highlight:
