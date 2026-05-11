@@ -1,6 +1,17 @@
-# 川寶團隊每日報告
+# 小安研究團隊每日報告
 
-歡迎使用川寶團隊每日報告自動發布平台!🎉
+歡迎使用小安研究團隊每日報告自動發布平台!🎉
+
+## 🌅 今日 Morning Briefing
+
+> 快速掌握今日重點報告！每週一至週五自動更新。
+
+<iframe src="https://reportssite.vercel.app/" width="100%" height="600px" style="border:none;border-radius:8px;"></iframe>
+
+[🔗 在新視窗開啟完整報告平台 →](https://reportssite.vercel.app/)
+
+
+---
 
 ## 📊 最新報告
 

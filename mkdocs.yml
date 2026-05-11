@@ -1,7 +1,7 @@
 site_name: 小安研究團隊每日報告
 site_description: 小安研究團隊每日報告自動發布平台
 site_author: 小安研究團隊
-site_url: https://openclaw-workspace-dun.vercel.app
+site_url: https://reportssite.vercel.app
 
 theme:
   name: material
@@ -39,9 +39,26 @@ nav:
   - 📚 研究報告: reports/研究.md
   - 💡 創業靈感: reports/創業.md
   - 🛒 促銷報告: reports/促銷.md
+  - 🎮 遊戲專區: games/index.md
 
 plugins:
   - search
+  - rss:
+      enabled: true
+      rss_feed_enabled: true
+      json_feed_enabled: true
+      feeds_filenames:
+        rss_created: feed.xml
+        json_created: feed.json
+      use_git: true
+      length: 20
+      match_path: '.*'
+      date_from_meta:
+        as_creation: git
+        as_update: git
+        datetime_format: '%Y-%m-%d'
+      categories: []
+  - print-site
 
 extra_css:
   - stylesheets/extra.css
