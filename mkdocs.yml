@@ -34,31 +34,17 @@ theme:
 
 nav:
   - 🏠 首頁: index.md
-  - 📰 新聞快報: reports/新聞/全方位新聞快報_20260507_1507.html
+  - 📰 新聞快報: reports/新聞/
   - 📈 股市報告: reports/股市.md
-  - 📚 研究報告: reports/研究.md
-  - 💡 創業靈感: reports/創業.md
+  - 💡 產業研究: reports/產業研究.md
+  - 📚 專題報告: reports/專題報告.md
+  - 🚀 科技新知: reports/科技新知.md
+  - 🏥 健康專欄: reports/健康專欄.md
   - 🛒 促銷報告: reports/促銷.md
   - 🎮 遊戲專區: games/index.md
 
 plugins:
   - search
-  - rss:
-      enabled: true
-      rss_feed_enabled: true
-      json_feed_enabled: true
-      feeds_filenames:
-        rss_created: feed.xml
-        json_created: feed.json
-      use_git: true
-      length: 20
-      match_path: '.*'
-      date_from_meta:
-        as_creation: git
-        as_update: git
-        datetime_format: '%Y-%m-%d'
-      categories: []
-  - print-site
 
 extra_css:
   - stylesheets/extra.css
@@ -74,3 +60,6 @@ markdown_extensions:
   - md_in_html
   - toc:
       permalink: true
+
+extra_javascript:
+  - js/search_suggestions.js
