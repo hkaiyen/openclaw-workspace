@@ -2,13 +2,14 @@
 const popularSearches = [
     { keyword: "股票", emoji: "📈", count: 48 },
     { keyword: "新聞", emoji: "📰", count: 30 },
-    { keyword: "創業", emoji: "💡", count: 25 },
+    { keyword: "產業", emoji: "💡", count: 25 },
     { keyword: "健康", emoji: "🍎", count: 20 },
     { keyword: "財報", emoji: "💹", count: 15 },
-    { keyword: "火鍋", emoji: "🍲", count: 5 },
+    { keyword: "餐廳", emoji: "🍽️", count: 5 },
     { keyword: "心理", emoji: "🧠", count: 8 },
-    { keyword: "飲食", emoji: "🥗", count: 6 },
-    { keyword: "投資", emoji: "📊", count: 12 }
+    { keyword: "美食", emoji: "🍜", count: 6 },
+    { keyword: "投資", emoji: "📊", count: 12 },
+    { keyword: "科技", emoji: "🚀", count: 3 }
 ];
 
 // 儲存搜尋歷史到 localStorage
@@ -45,12 +46,10 @@ function renderSearchSuggestions() {
         container.appendChild(btn);
     });
     
-    // 把搜尋建議加到搜尋框旁邊
     const searchArea = document.querySelector('.md-search');
     if (searchArea) {
         searchArea.appendChild(container);
     }
 }
 
-// 當頁面載入完成後
 document.addEventListener('DOMContentLoaded', renderSearchSuggestions);
