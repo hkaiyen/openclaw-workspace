@@ -34,15 +34,15 @@ theme:
 
 nav:
   - 🏠 首頁: index.md
+  - 📈 股市與投資: reports/股市/
+  - 📚 研究報告: reports/研究/
+  - 💡 創業專區: reports/創業.md
+  - 🛒 促銷報告: reports/促銷/
   - 📰 新聞快報: reports/新聞/
-  - 📈 股市報告: reports/股市/
   - 💡 產業研究: reports/產業研究/
-  - 📚 專題報告: reports/專題報告/
   - 🚀 科技新知: reports/科技新知/
   - 🏥 健康專欄: reports/健康專欄/
-  - 🛒 促銷報告: reports/促銷/
-  - 💼 研究報告: reports/研究/
-  - 💡 創業專區: reports/創業.md
+  - 📚 專題報告: reports/專題報告/
   - 🎮 遊戲專區: games/index.md
 
 plugins:
