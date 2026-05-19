@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>中國象棋 - 人機對戰</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  touch-action: none;
+}
+body {
+  background: #2d1f0e;
+  background: radial-gradient(ellipse at center, #3a2710 0%, #1a0f05 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #f5d58a;
+  user-select: none;
+  -webkit-user-select: none;
+}
+#title {
+  font-size: 22px;
+  font-weight: bold;
+  letter-spacing: 4px;
+  margin-bottom: 8px;
+  text-shadow: 1px 2px 4px rgba(0,0,0,0.5);
+}
+#status-bar {
+  font-size: 14px;
+  height: 22px;
+  margin-bottom: 6px;
+  color: #c9a345;
+  letter-spacing: 1px;
+}
+#game-container {
+  position: relative;
+  width: min(95vw, 480px);
+  aspect-ratio: 9/10;
+}
+#board-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.piece {
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+.piece:hover { transform: scale(1.08); }
+.piece.selected { transform: scale(1.12); filter: drop-shadow(0 0 6px #ffd700); }
+.piece.disabled { pointer-events: none; opacity: 0.7; }
+.valid-move-indicator {
+  cursor: pointer;
+}
+.valid-move-indicator:hover circle { fill: rgba(255,220,80,0.7); }
+#controls {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+.btn {
+  background: linear-gradient(180deg, #8b6914 0%, #5a4410 100%);
+  border: 2px solid #c9a345;
+  border-radius: 8px;
+  color: #f5d58a;
+  font-size: 14px;
+  padding: 8px 20px;
+  cursor: pointer;
+  letter-spacing: 2px;
+  transition: all 0.15s;
+}
+.btn:active { transform: scale(0.95); background: linear-gradient(180deg, #6b5010 0%, #4a3308 100%); }
+#thinking-indicator {
+  display: none;
+  font-size: 13px;
+  color: #c9a345;
+  height: 20px;
+  margin-top: 4px;
+  letter-spacing: 1px;
+}
+</style>
+</head>
+<body>
+<div id="title">中國象棋</div>
+<div id="status-bar">紅方先行</div>
+<div id="game-container">
+  <svg id="board-svg" viewBox="0 0 450 500"></svg>
+</div>
+<div id="thinking-indicator">🧠 AI 思考中...</div>
+<div id="controls">
+  <button class="btn" onclick="resetGame()">重新開始</button>
+</div>
+
+<script>
+// ============================================================
+// CONSTANTS
+// ============================================================
+const EMPTY = 0;
+const RED = 1, BLACK = 2;
+const PIECE_CHARS = {
+  // Red (uppercase Unicode)
+  'K': '將', 'A': '士', 'B': '象', 'N': '馬', 'R': '車', 'C': '炮', 'P': '兵',
+  // Black (lowercase Unicode)
+  'k': '帥', 'a': '仕', 'b': '相', 'n': '碼', 'r': '車', 'c': '砲', 'p': '卒'
+};
+
+const PIECE_VALUES = { 'K': 0, 'A': 2, 'B': 2, 'N': 4, 'R': 9, 'C': 4.5, 'P': 1 };
+const PIECE_PRIORITY = { 'K': 0, 'A': 1, 'B': 2, 'N': 3, 'R': 4, 'C': 5, 'P': 6 };
+const PIECE_CHARS_DISPLAY = {
+  'K': '將', 'A': '士', 'B': '象', 'N': '馬', 'R': '車', 'C': '炮', 'P': '兵',
+  'k': '帥', 'a': '仕', 'b': '相', 'n': '碼', 'r': '車', 'c': '砲', 'p': '卒'
+};
+
+// ============================================================
+// BOARD SETUP
+// ============================================================
+// Board is 10 rows (0-9, 0=top/black side, 9=bottom/red side)
+// Columns 0-8 (0=left, 8=right)
+let board = [];
+let selectedPiece = null;
+let validMoves = [];
+let currentPlayer = RED;
+let gameOver = false;
+let aiThinking = false;
+
+function createInitialBoard() {
+  // Row 0: black pieces
+  const row0 = [
+    ['r','n','b','a','k','a','b','n','r'],
+    [0,   0,   0,   0,   0,   0,   0,   0,   0  ],
+    [0,  'c',  0,   0,   0,   0,   0,  'c', 0  ],
+    ['p', 0,  'p', 0,  'p', 0,  'p', 0,  'p'],
+    [0,   0,   0,   0,   0,   0,   0,   0,   0  ],
+    [0,   0,   0,   0,   0,   0,   0,   0,   0  ],
+    [0,   0,   0,   0,   0,   0,   0,   0,   0  ],
+    ['P', 0,  'P', 0,  'P', 0,  'P', 0,  'P'],
+    [0,  'C',  0,   0,   0,   0,   0,  'C', 0  ],
+    [0,   0,   0,   0,   0,   0,   0,   0,   0  ],
+    ['R','N','B','A','K','A','B','N','R']
+  ];
+  
+  board = [];
+  for (let r = 0; r < 10; r++) {
+    board[r] = [];
+    for (let c = 0; c < 9; c++) {
+      board[r][c] = row0[r][c] || 0;
+    }
+  }
+}
+
+// ============================================================
+// COORDINATE HELPERS
+// ============================================================
+// SVG uses x=45..405 (col 0..8) y=25..475 (row 0..9)
+function boardToSVG(col, row) {
+  return { x: 45 + col * 40, y: 25 + row * 50 };
+}
+function svgToBoard(x, y) {
+  return {
+    col: Math.round((x - 45) / 40),
+    row: Math.round((y - 25) / 50)
+  };
+}
+function isValidCoord(col, row) {
+  return col >= 0 && col <= 8 && row >= 0 && row <= 9;
+}
+
+// ============================================================
+// GAME RULES
+// ============================================================
+function getPieceOwner(piece) {
+  if (!piece || piece === 0) return 0;
+  return piece === piece.toUpperCase() ? RED : BLACK;
+}
+
+function isPalace(row, col, player) {
+  if (player === BLACK) return row <= 2 && col >= 3 && col <= 5;
+  return row >= 7 && col >= 3 && col <= 5;
+}
+
+function isDiagonalBlocked(r1, c1, r2, c2) {
+  // For elephant/bishop diagonal movement
+  const dr = r2 > r1 ? 1 : -1;
+  const dc = c2 > c1 ? 1 : -1;
+  const midR = r1 + dr, midC = c1 + dc;
+  return board[midR][midC] !== 0;
+}
+
+function canMovePiece(fromRow, fromCol, toRow, toCol) {
+  const piece = board[fromRow][fromCol];
+  const target = board[toRow][toCol];
+  const owner = getPieceOwner(piece);
+  const targetOwner = target ? getPieceOwner(target) : 0;
+  
+  if (targetOwner === owner) return false;
+  
+  const dRow = toRow - fromRow;
+  const dCol = toCol - fromCol;
+  const absR = Math.abs(dRow);
+  const absC = Math.abs(dCol);
+  
+  const upper = piece.toUpperCase();
+  
+  switch (upper) {
+    case 'K': // General
+      if (!isPalace(toRow, toCol, owner)) return false;
+      if (absR + absC !== 1) return false;
+      return true;
+      
+    case 'A': // Advisor
+      if (!isPalace(toRow, toCol, owner)) return false;
+      if (absR !== 1 || absC !== 1) return false;
+      return true;
+      
+    case 'B': // Elephant
+      if (toRow < 0 || toRow > 9 || toCol < 0 || toCol > 8) return false;
+      if (owner === BLACK && toRow > 4) return false;
+      if (owner === RED && toRow < 5) return false;
+      if (absR !== 2 || absC !== 2) return false;
+      return !isDiagonalBlocked(fromRow, fromCol, toRow, toCol);
+      
+    case 'N': // Horse
+      if (absR + absC !== 3) return false;
+      if (absR === 2 && absC === 1) {
+        // horizontal leg blocked
+        const blockCol = fromCol + (dCol > 0 ? 1 : -1);
+        if (board[fromRow][blockCol] !== 0) return false;
+      } else if (absR === 1 && absC === 2) {
+        // vertical leg blocked
+        const blockRow = fromRow + (dRow > 0 ? 1 : -1);
+        if (board[blockRow][fromCol] !== 0) return false;
+      } else {
+        return false;
+      }
+      return true;
+      
+    case 'R': // Chariot
+      if (dRow !== 0 && dCol !== 0) return false;
+      if (dRow === 0) {
+        const step = dCol > 0 ? 1 : -1;
+        for (let c = fromCol + step; c !== toCol; c += step) {
+          if (board[fromRow][c] !== 0) return false;
+        }
+      } else {
+        const step = dRow > 0 ? 1 : -1;
+        for (let r = fromRow + step; r !== toRow; r += step) {
+          if (board[r][fromCol] !== 0) return false;
+        }
+      }
+      return true;
+      
+    case 'C': // Cannon
+      if (dRow !== 0 && dCol !== 0) return false;
+      let count = 0;
+      if (dRow === 0) {
+        const step = dCol > 0 ? 1 : -1;
+        for (let c = fromCol + step; c !== toCol; c += step) {
+          if (board[fromRow][c] !== 0) count++;
+        }
+      } else {
+        const step = dRow > 0 ? 1 : -1;
+        for (let r = fromRow + step; r !== toRow; r += step) {
+          if (board[r][fromCol] !== 0) count++;
+        }
+      }
+      if (targetOwner !== 0) return count === 1;
+      return count === 0;
+      
+    case 'P': // Pawn
+      if (owner === RED) {
+        if (fromRow <= 4) {
+          // Crossed river: can move 4 directions
+          if (dRow === 0 && absC === 1) return true;
+          if (dCol === 0 && absR === 1) return true;
+          return false;
+        } else {
+          // Before river: only forward
+          if (dRow === 0 && absC === 1) return true;
+          return false;
+        }
+      } else {
+        if (fromRow >= 5) {
+          // Crossed river
+          if (dRow === 0 && absC === 1) return true;
+          if (dCol === 0 && absR === 1) return true;
+          return false;
+        } else {
+          // Before river
+          if (dRow === 0 && absC === 1) return true;
+          return false;
+        }
+      }
+  }
+  return false;
+}
+
+function findKing(player) {
+  const kingChar = player === RED ? 'K' : 'k';
+  for (let r = 0; r < 10; r++) {
+    for (let c = 0; c < 9; c++) {
+      if (board[r][c] === kingChar) return { row: r, col: c };
+    }
+  }
+  return null;
+}
+
+function isKingInCheck(player) {
+  const kingPos = findKing(player);
+  if (!kingPos) return false;
+  const enemy = player === RED ? BLACK : RED;
+  
+  for (let r = 0; r < 10; r++) {
+    for (let c = 0; c < 9; c++) {
+      const piece = board[r][c];
+      if (getPieceOwner(piece) === enemy) {
+        if (canMovePiece(r, c, kingPos.row, kingPos.col)) return true;
+      }
+    }
+  }
+  return false;
+}
+
+function hasLegalMoves(player) {
+  for (let r = 0; r < 10; r++) {
+    for (let c = 0; c < 9; c++) {
+      const piece = board[r][c];
+      if (getPieceOwner(piece) === player) {
+        for (let tr = 0; tr < 10; tr++) {
+          for (let tc = 0; tc < 9; tc++) {
+            if (canMovePiece(r, c, tr, tc)) {
+              // Simulate move
+              const orig = board[tr][tc];
+              board[tr][tc] = piece;
+              board[r][c] = 0;
+              const inCheck = isKingInCheck(player);
+              board[r][c] = piece;
+              board[tr][tc] = orig;
+              if (!inCheck) return true;
+            }
+          }
+        }
+      }
+    }
+  }
+  return false;
+}
+
+function isFaceToFace() {
+  const redKing = findKing(RED);
+  const blackKing = findKing(BLACK);
+  if (!redKing || !blackKing) return false;
+  if (redKing.col !== blackKing.col) return false;
+  // Check for pieces between
+  for (let r = blackKing.row + 1; r < redKing.row; r++) {
+    if (board[r][redKing.col] !== 0) return false;
+  }
+  return true;
+}
+
+// ============================================================
+// MOVE EXECUTION
+// ============================================================
+function makeMove(fromRow, fromCol, toRow, toCol) {
+  const piece = board[fromRow][fromCol];
+  const captured = board[toRow][toCol];
+  
+  board[toRow][toCol] = piece;
+  board[fromRow][fromCol] = 0;
+  
+  return captured;
+}
+
+function undoMove(fromRow, fromCol, toRow, toCol, captured) {
+  const piece = board[toRow][toCol];
+  board[fromRow][fromCol] = piece;
+  board[toRow][toCol] = captured;
+}
+
+// ============================================================
+// EVALUATION
+// ============================================================
+function evaluateBoard() {
+  let score = 0;
+  
+  // Material
+  for (let r = 0; r < 10; r++) {
+    for (let c = 0; c < 9; c++) {
+      const piece = board[r][c];
+      if (piece && piece !== 0) {
+        const upper = piece.toUpperCase();
+        const val = PIECE_VALUES[upper] || 0;
+        const owner = getPieceOwner(piece);
+        const bonus = (owner === RED) ? val : -val;
+        score += bonus;
+        
+        // Position bonus
+        if (upper === 'P') {
+          if (owner === RED) {
+            score += r * 0.1;
+          } else {
+            score -= (9 - r) * 0.1;
+          }
+        }
+      }
+    }
+  }
+  
+  // Face-to-face penalty for red (red general is in danger)
+  if (isFaceToFace()) {
+    const redKing = findKing(RED);
+    if (redKing) score -= 5;
+  }
+  
+  return score;
+}
+
+// ============================================================
+// AI: ALPHA-BETA PRUNING
+// ============================================================
+const MAX_DEPTH = 2;
+
+function generateAllMoves(player) {
+  const moves = [];
+  for (let r = 0; r < 10; r++) {
+    for (let c = 0; c < 9; c++) {
+      const piece = board[r][c];
+      if (getPieceOwner(piece) === player) {
+        for (let tr = 0; tr < 10; tr++) {
+          for (let tc = 0; tc < 9; tc++) {
+            if (canMovePiece(r, c, tr, tc)) {
+              const captured = board[tr][tc];
+              // Quick check: would this move leave our king in check?
+              board[tr][tc] = piece;
+              board[r][c] = 0;
+              const inCheck = isKingInCheck(player);
+              board[r][c] = piece;
+              board[tr][tc] = captured;
+              if (!inCheck) {
+                // Prioritize captures
+                const priority = captured ? (PIECE_VALUES[captured.toUpperCase()] || 0) * 10 : 0;
+                moves.push({ fromR: r, fromC: c, toR: tr, toC: tc, priority });
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  // Sort by priority (captures first) for better pruning
+  moves.sort((a, b) => b.priority - a.priority);
+  return moves;
+}
+
+function alphaBeta(depth, alpha, beta, maximizing) {
+  const player = maximizing ? RED : BLACK;
+  
+  if (depth === 0) return evaluateBoard();
+  
+  const moves = generateAllMoves(player);
+  if (moves.length === 0) {
+    // No legal moves = checkmate or stalemate
+    if (isKingInCheck(player)) return maximizing ? -10000 : 10000;
+    return 0;
+  }
+  
+  if (maximizing) {
+    let best = alpha;
+    for (const m of moves) {
+      const captured = makeMove(m.fromR, m.fromC, m.toR, m.toC);
+      const val = alphaBeta(depth - 1, best, beta, false);
+      undoMove(m.fromR, m.fromC, m.toR, m.toC, captured);
+      if (val > best) {
+        best = val;
+        if (best >= beta) break;
+      }
+    }
+    return best;
+  } else {
+    let worst = beta;
+    for (const m of moves) {
+      const captured = makeMove(m.fromR, m.fromC, m.toR, m.toC);
+      const val = alphaBeta(depth - 1, alpha, worst, true);
+      undoMove(m.fromR, m.fromC, m.toR, m.toC, captured);
+      if (val < worst) {
+        worst = val;
+        if (worst <= alpha) break;
+      }
+    }
+    return worst;
+  }
+}
+
+function findBestMove() {
+  const moves = generateAllMoves(BLACK);
+  if (moves.length === 0) return null;
+  
+  let bestMove = null;
+  let bestScore = -Infinity;
+  
+  // Sort moves, prioritize captures
+  moves.sort((a, b) => b.priority - a.priority);
+  
+  for (const m of moves) {
+    const captured = makeMove(m.fromR, m.fromC, m.toR, m.toC);
+    const score = alphaBeta(MAX_DEPTH, -Infinity, Infinity, true);
+    undoMove(m.fromR, m.fromC, m.toR, m.toC, captured);
+    
+    if (score > bestScore) {
+      bestScore = score;
+      bestMove = m;
+    }
+  }
+  
+  return bestMove;
+}
+
+// ============================================================
+// RENDERING
+// ============================================================
+const svg = document.getElementById('board-svg');
+
+function drawBoard() {
+  svg.innerHTML = '';
+  
+  // Background
+  const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  bg.setAttribute('x', '0'); bg.setAttribute('y', '0');
+  bg.setAttribute('width', '450'); bg.setAttribute('height', '500');
+  bg.setAttribute('fill', '#c8a456');
+  bg.setAttribute('rx', '8');
+  svg.appendChild(bg);
+  
+  // Grid lines
+  const gridGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  
+  // Vertical lines (col 0-8)
+  for (let c = 0; c <= 8; c++) {
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    const x = 45 + c * 40;
+    line.setAttribute('x1', x); line.setAttribute('y1', '25');
+    line.setAttribute('x2', x); line.setAttribute('y2', '475');
+    line.setAttribute('stroke', '#2d1f0e'); line.setAttribute('stroke-width', '1.5');
+    gridGroup.appendChild(line);
+  }
+  
+  // Horizontal lines (row 0-9)
+  for (let r = 0; r <= 9; r++) {
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    const y = 25 + r * 50;
+    line.setAttribute('x1', '45'); line.setAttribute('y1', y);
+    line.setAttribute('x2', '365'); line.setAttribute('y2', y);
+    line.setAttribute('stroke', '#2d1f0e'); line.setAttribute('stroke-width', '1.5');
+    gridGroup.appendChild(line);
+  }
+  
+  svg.appendChild(gridGroup);
+  
+  // Palace diagonals (row 0-2 and row 7-9)
+  const palaceGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  palaceGroup.setAttribute('stroke', '#2d1f0e');
+  palaceGroup.setAttribute('stroke-width', '1.5');
+  
+  // Black palace (top)
+  ['3,0,5,2', '5,0,3,2'].forEach(p => {
+    const [x1,y1,x2,y2] = p.split(',').map(v => +v);
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', 45 + x1*40); line.setAttribute('y1', 25 + y1*50);
+    line.setAttribute('x2', 45 + x2*40); line.setAttribute('y2', 25 + y2*50);
+    palaceGroup.appendChild(line);
+  });
+  
+  // Red palace (bottom)
+  ['3,7,5,9', '5,7,3,9'].forEach(p => {
+    const [x1,y1,x2,y2] = p.split(',').map(v => +v);
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', 45 + x1*40); line.setAttribute('y1', 25 + y1*50);
+    line.setAttribute('x2', 45 + x2*40); line.setAttribute('y2', 25 + y2*50);
+    palaceGroup.appendChild(line);
+  });
+  
+  svg.appendChild(palaceGroup);
+  
+  // River
+  const river = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  river.setAttribute('x', '45'); river.setAttribute('y', 25 + 4.5 * 50 - 20);
+  river.setAttribute('width', '320'); river.setAttribute('height', '40');
+  river.setAttribute('fill', '#b8963e');
+  river.setAttribute('rx', '4');
+  river.setAttribute('opacity', '0.5');
+  svg.appendChild(river);
+  
+  // River text
+  const riverText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  riverText.setAttribute('x', '225'); riverText.setAttribute('y', '273');
+  riverText.setAttribute('text-anchor', 'middle'); riverText.setAttribute('dominant-baseline', 'middle');
+  riverText.setAttribute('fill', '#5a3d0a'); riverText.setAttribute('font-size', '16');
+  riverText.setAttribute('font-weight', 'bold');
+  riverText.textContent = '楚 河  ·  漢 界';
+  svg.appendChild(riverText);
+  
+  // River separator dots
+  [1,2,3,4,5,6,7].forEach(c => {
+    const cx = 45 + c * 40;
+    [225-18, 225+18].forEach(cy => {
+      const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      dot.setAttribute('cx', cx); dot.setAttribute('cy', cy);
+      dot.setAttribute('r', '2'); dot.setAttribute('fill', '#5a3d0a');
+      svg.appendChild(dot);
+    });
+  });
+  
+  // Endpoints for row 0 and 9 (extra horizontal lines)
+  const endGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  endGroup.setAttribute('stroke', '#2d1f0e'); endGroup.setAttribute('stroke-width', '1.5');
+  
+  [{c:0,r:0}, {c:8,r:0}, {c:0,r:9}, {c:8,r:9}].forEach(({c,r}) => {
+    const x = 45 + c * 40;
+    const y = 25 + r * 50;
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', c === 0 ? x - 10 : x);
+    line.setAttribute('x2', c === 0 ? x : x + 10);
+    line.setAttribute('y1', y === 25 ? y : y - 10);
+    line.setAttribute('y2', y === 25 ? y + 10 : y);
+    endGroup.appendChild(line);
+  });
+  
+  // Diagonal marks at row 2 and row 7 endpoints
+  const diagData = [
+    {col: 0, row: 2, dx: 10, dy: 10}, {col: 4, row: 2, dx: -10, dy: 10},
+    {col: 4, row: 2, dx: 10, dy: 10}, {col: 8, row: 2, dx: -10, dy: 10},
+    {col: 0, row: 7, dx: 10, dy: -10}, {col: 4, row: 7, dx: -10, dy: -10},
+    {col: 4, row: 7, dx: 10, dy: -10}, {col: 8, row: 7, dx: -10, dy: -10}
+  ];
+  
+  diagData.forEach(({col, row, dx, dy}) => {
+    const x = 45 + col * 40;
+    const y = 25 + row * 50;
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', x); line.setAttribute('y1', y);
+    line.setAttribute('x2', x + dx); line.setAttribute('y2', y + dy);
+    endGroup.appendChild(line);
+  });
+  
+  svg.appendChild(endGroup);
+  
+  // Draw valid move indicators
+  validMoves.forEach(m => {
+    const pos = boardToSVG(m.col, m.row);
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.setAttribute('class', 'valid-move-indicator');
+    g.dataset.toRow = m.row;
+    g.dataset.toCol = m.col;
+    
+    // Determine if it's a capture (piece present)
+    const isCapture = board[m.row][m.col] !== 0;
+    
+    if (isCapture) {
+      // Target indicator (ring)
+      const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      ring.setAttribute('cx', pos.x); ring.setAttribute('cy', pos.y);
+      ring.setAttribute('r', '18');
+      ring.setAttribute('fill', 'rgba(255,60,60,0.25)');
+      ring.setAttribute('stroke', 'rgba(255,60,60,0.6)');
+      ring.setAttribute('stroke-width', '2');
+      g.appendChild(ring);
+    } else {
+      // Normal move indicator (dot)
+      const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      dot.setAttribute('cx', pos.x); dot.setAttribute('cy', pos.y);
+      dot.setAttribute('r', '8');
+      dot.setAttribute('fill', 'rgba(80,200,80,0.6)');
+      g.appendChild(dot);
+    }
+    
+    g.addEventListener('click', () => handleValidMoveClick(m.row, m.col));
+    svg.appendChild(g);
+  });
+  
+  // Draw pieces
+  for (let r = 0; r < 10; r++) {
+    for (let c = 0; c < 9; c++) {
+      const piece = board[r][c];
+      if (piece && piece !== 0) {
+        drawPiece(r, c, piece);
+      }
+    }
+  }
+}
+
+function drawPiece(row, col, piece) {
+  const pos = boardToSVG(col, row);
+  const owner = getPieceOwner(piece);
+  const isRed = owner === RED;
+  const char = piece.toUpperCase();
+  
+  const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  g.setAttribute('class', 'piece');
+  g.dataset.row = row;
+  g.dataset.col = col;
+  
+  const isSelected = selectedPiece && selectedPiece.row === row && selectedPiece.col === col;
+  if (isSelected) g.classList.add('selected');
+  if (currentPlayer !== owner || gameOver || (currentPlayer === BLACK && aiThinking)) {
+    g.classList.add('disabled');
+  }
+  
+  // Shadow
+  const shadow = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  shadow.setAttribute('cx', pos.x + 2); shadow.setAttribute('cy', pos.y + 2);
+  shadow.setAttribute('r', '19');
+  shadow.setAttribute('fill', 'rgba(0,0,0,0.3)');
+  g.appendChild(shadow);
+  
+  // Piece background
+  const bg = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  bg.setAttribute('cx', pos.x); bg.setAttribute('cy', pos.y);
+  bg.setAttribute('r', '19');
+  bg.setAttribute('fill', isRed ? '#fff8e7' : '#1a1a1a');
+  bg.setAttribute('stroke', isRed ? '#c0392b' : '#c8a456');
+  bg.setAttribute('stroke-width', '2');
+  g.appendChild(bg);
+  
+  // Character
+  const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  text.setAttribute('x', pos.x); text.setAttribute('y', pos.y + 1);
+  text.setAttribute('text-anchor', 'middle'); text.setAttribute('dominant-baseline', 'middle');
+  text.setAttribute('font-size', '20');
+  text.setAttribute('font-weight', 'bold');
+  text.setAttribute('font-family', 'KaiTi, STKaiti, serif');
+  text.setAttribute('fill', isRed ? '#c0392b' : '#1a1a1a');
+  text.textContent = piece;
+  g.appendChild(text);
+  
+  if (!isSelected && currentPlayer === owner && !gameOver && !(owner === BLACK && aiThinking)) {
+    g.addEventListener('click', (e) => {
+      e.stopPropagation();
+      handlePieceClick(row, col);
+    });
+  }
+  
+  svg.appendChild(g);
+}
+
+function handlePieceClick(row, col) {
+  if (gameOver || aiThinking) return;
+  if (currentPlayer !== getPieceOwner(board[row][col])) return;
+  
+  if (selectedPiece && selectedPiece.row === row && selectedPiece.col === col) {
+    // Deselect
+    selectedPiece = null;
+    validMoves = [];
+  } else {
+    selectedPiece = { row, col };
+    validMoves = [];
+    
+    // Calculate valid moves
+    for (let tr = 0; tr < 10; tr++) {
+      for (let tc = 0; tc < 9; tc++) {
+        if (canMovePiece(row, col, tr, tc)) {
+          // Simulate move to check if king stays in check
+          const piece = board[row][col];
+          const captured = board[tr][tc];
+          board[tr][tc] = piece;
+          board[row][col] = 0;
+          const inCheck = isKingInCheck(currentPlayer);
+          board[row][col] = piece;
+          board[tr][tc] = captured;
+          
+          if (!inCheck) {
+            validMoves.push({ row: tr, col: tc });
+          }
+        }
+      }
+    }
+  }
+  
+  drawBoard();
+}
+
+function handleValidMoveClick(toRow, toCol) {
+  if (!selectedPiece) return;
+  executeHumanMove(selectedPiece.row, selectedPiece.col, toRow, toCol);
+}
+
+function executeHumanMove(fromRow, fromCol, toRow, toCol) {
+  const piece = board[fromRow][fromCol];
+  
+  makeMove(fromRow, fromCol, toRow, toCol);
+  
+  selectedPiece = null;
+  validMoves = [];
+  
+  const captured = board[toRow][toCol];
+  const isCapture = captured !== 0;
+  
+  // Check for game end
+  if (captured && (captured === 'k' || captured === 'K')) {
+    gameOver = true;
+    drawBoard();
+    updateStatus(`🎉 紅方獲勝！吃掉黑將！`);
+    return;
+  }
+  
+  // Check for check
+  if (isKingInCheck(BLACK)) {
+    if (!hasLegalMoves(BLACK)) {
+      gameOver = true;
+      drawBoard();
+      updateStatus(`🎉 紅方獲勝！將死！`);
+      return;
+    }
+    updateStatus(`🔥 將軍！`);
+    setTimeout(() => {
+      currentPlayer = BLACK;
+      drawBoard();
+      setTimeout(doAiMove, 500);
+    }, 800);
+    return;
+  }
+  
+  currentPlayer = BLACK;
+  drawBoard();
+  setTimeout(doAiMove, 400);
+}
+
+function doAiMove() {
+  if (gameOver) return;
+  aiThinking = true;
+  document.getElementById('thinking-indicator').style.display = 'block';
+  drawBoard();
+  
+  setTimeout(() => {
+    const move = findBestMove();
+    aiThinking = false;
+    document.getElementById('thinking-indicator').style.display = 'none';
+    
+    if (!move) {
+      gameOver = true;
+      updateStatus(`🎉 紅方獲勝！黑方無棋可走！`);
+      drawBoard();
+      return;
+    }
+    
+    const piece = board[move.fromR][move.fromC];
+    const captured = makeMove(move.fromR, move.fromC, move.toR, move.toC);
+    
+    if (captured && (captured === 'K')) {
+      gameOver = true;
+      drawBoard();
+      updateStatus(`💀 黑方獲勝！吃掉紅將！`);
+      return;
+    }
+    
+    if (isKingInCheck(RED)) {
+      if (!hasLegalMoves(RED)) {
+        gameOver = true;
+        drawBoard();
+        updateStatus(`💀 黑方獲勝！將死！`);
+        return;
+      }
+      updateStatus(`🔥 將軍！`);
+    } else {
+      updateStatus(`黑方行棋`);
+    }
+    
+    currentPlayer = RED;
+    drawBoard();
+  }, 100);
+}
+
+function updateStatus(msg) {
+  document.getElementById('status-bar').textContent = msg;
+}
+
+function resetGame() {
+  createInitialBoard();
+  selectedPiece = null;
+  validMoves = [];
+  currentPlayer = RED;
+  gameOver = false;
+  aiThinking = false;
+  document.getElementById('thinking-indicator').style.display = 'none';
+  updateStatus('紅方先行');
+  drawBoard();
+}
+
+// Initialize
+createInitialBoard();
+drawBoard();
+</script>
+</body>
+</html>
