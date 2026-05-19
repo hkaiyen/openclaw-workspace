@@ -33,10 +33,10 @@ extra_css:
 
 nav:
   - 首頁: index.md
-  - 📈 股市與投資: reports/股市/index.md
-  - 🛒 促銷活動: reports/促銷/index.md
-  - 📚 研究報告: reports/研究/index.md
-  - 🎮 小遊戲: games/index.md
+  - 股市與投資: reports/股市/index.md
+  - 促銷活動: reports/促銷/index.md
+  - 研究報告: reports/研究/index.md
+  - 小遊戲: games/index.md
 
 plugins:
   - search
