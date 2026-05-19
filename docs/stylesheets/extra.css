@@ -65,13 +65,6 @@ html, body {
   color: #1976D2 !important;
 }
 
-/* 深色模式 */
-@media (prefers-color-scheme: dark) {
-  .md-content a[href$=".docx"] {
-    color: #64B5F6 !important;
-  }
-}
-
 /* ========== 手機版導覽列優化 ========== */
 @media screen and (max-width: 76.1875em) {
   /* 確保側邊欄可見 */
@@ -163,26 +156,6 @@ html, body {
 ::-webkit-scrollbar-thumb {
   background: #ccc;
   border-radius: 3px;
-}
-
-/* 深色模式加強 */
-@media (prefers-color-scheme: dark) {
-  html, body {
-    background-color: #1a1a1a !important;
-    color: #e0e0e0 !important;
-  }
-  .md-content {
-    background-color: #1a1a1a !important;
-  }
-  .md-content a {
-    color: #64B5F6 !important;
-  }
-  ::-webkit-scrollbar-track {
-    background: #2a2a2a;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: #555;
-  }
 }
 
 /* 表格響應式 */
