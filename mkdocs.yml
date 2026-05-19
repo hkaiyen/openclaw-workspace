@@ -1,7 +1,7 @@
-site_name: 川寶團隊每日報告
-site_description: 川寶團隊每日報告自動發布平台
-site_author: 川寶團隊
-site_url: https://site-delta-jade-91.vercel.app
+site_name: 小安研究團隊每日報告
+site_description: 小安研究團隊每日報告自動發布平台
+site_author: 小安研究團隊
+site_url: https://reportssite.vercel.app
 
 theme:
   name: material
@@ -33,14 +33,21 @@ theme:
     - content.code.copy
 
 nav:
-  - 首頁: index.md
-  - 報告列表:
-    - reports/index.md
-  - 🎮 遊戲專區:
-    - games/index.md
+  - 🏠 首頁: index.md
+  - 📰 新聞快報: reports/新聞/
+  - 📈 股市報告: reports/股市.md
+  - 💡 產業研究: reports/產業研究.md
+  - 📚 專題報告: reports/專題報告.md
+  - 🚀 科技新知: reports/科技新知.md
+  - 🏥 健康專欄: reports/健康專欄.md
+  - 🛒 促銷報告: reports/促銷.md
+  - 🎮 遊戲專區: games/index.md
 
 plugins:
   - search
+
+extra_css:
+  - stylesheets/extra.css
 
 markdown_extensions:
   - pymdownx.highlight:
@@ -53,3 +60,6 @@ markdown_extensions:
   - md_in_html
   - toc:
       permalink: true
+
+extra_javascript:
+  - js/search_suggestions.js

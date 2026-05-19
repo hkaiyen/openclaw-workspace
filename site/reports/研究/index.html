@@ -1,0 +1,863 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="小安研究團隊每日報告自動發布平台">
+      
+      
+        <meta name="author" content="小安研究團隊">
+      
+      
+        <link rel="canonical" href="https://reportssite.vercel.app/reports/%E7%A0%94%E7%A9%B6/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>專題報告 - 小安研究團隊每日報告</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+TC:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Noto Sans TC";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../.." title="小安研究團隊每日報告" class="md-header__button md-logo" aria-label="小安研究團隊每日報告" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            小安研究團隊每日報告
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              專題報告
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="切換深色模式"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="切換深色模式" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo"  aria-label="切換淺色模式"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="切換淺色模式" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  🏠 首頁
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../新聞/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  📰 新聞快報
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../%E8%82%A1%E5%B8%82/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  📈 股市報告
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../%E7%94%A2%E6%A5%AD%E7%A0%94%E7%A9%B6/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  💡 產業研究
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../%E5%B0%88%E9%A1%8C%E5%A0%B1%E5%91%8A/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  📚 專題報告
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../%E7%A7%91%E6%8A%80%E6%96%B0%E7%9F%A5/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  🚀 科技新知
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../%E5%81%A5%E5%BA%B7%E5%B0%88%E6%AC%84/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  🏥 健康專欄
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../%E4%BF%83%E9%8A%B7/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  🛒 促銷報告
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../games/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  🎮 遊戲專區
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="小安研究團隊每日報告" class="md-nav__button md-logo" aria-label="小安研究團隊每日報告" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    小安研究團隊每日報告
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🏠 首頁
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../新聞/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📰 新聞快報
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E8%82%A1%E5%B8%82/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📈 股市報告
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%94%A2%E6%A5%AD%E7%A0%94%E7%A9%B6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    💡 產業研究
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E5%B0%88%E9%A1%8C%E5%A0%B1%E5%91%8A/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📚 專題報告
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%A7%91%E6%8A%80%E6%96%B0%E7%9F%A5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🚀 科技新知
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E5%81%A5%E5%BA%B7%E5%B0%88%E6%AC%84/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🏥 健康專欄
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E4%BF%83%E9%8A%B7/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🛒 促銷報告
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../games/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🎮 遊戲專區
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="_1">專題報告<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<p><a href="/">← 返回首頁</a></p>
+<p>共 <strong>122</strong> 份報告</p>
+<h2 id="_2">報告列表<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="研究/深度研究_飲料店門市店长能力模_20260504_1521.docx">深度研究_飲料店門市店长能力模_20260504_1521</a></li>
+<li><a href="研究/貓咪研究社_20260502_0929.docx">貓咪研究社_20260502_0929</a></li>
+<li><a href="研究/晨間摘要_20260502_0823.docx">晨間摘要_20260502_0823</a></li>
+<li><a href="研究/深度研究_超級財報週，美股科技七雄的財報分析_20260501_0919.docx">深度研究_超級財報週，美股科技七雄的財報分析_20260501_0919</a></li>
+<li><a href="研究/deep_research_20260501_0828.docx">deep_research_20260501_0828</a></li>
+<li><a href="研究/全方位新聞快報_20260501_0600.docx">全方位新聞快報_20260501_0600</a></li>
+<li><a href="研究/週末行程規劃_20260501_0530.docx">週末行程規劃_20260501_0530</a></li>
+<li><a href="研究/晨間摘要_20260501_0200.docx">晨間摘要_20260501_0200</a></li>
+<li><a href="研究/591店面出租報告_20260501_0100.docx">591店面出租報告_20260501_0100</a></li>
+<li><a href="研究/deep_research_20260430_0713.docx">deep_research_20260430_0713</a></li>
+<li><a href="研究/全方位新聞快報_20260430_0600.docx">全方位新聞快報_20260430_0600</a></li>
+<li><a href="研究/晨間摘要_20260430_0200.docx">晨間摘要_20260430_0200</a></li>
+<li><a href="研究/591店面出租報告_20260430_0100.docx">591店面出租報告_20260430_0100</a></li>
+<li><a href="研究/全方位新聞快報_20260429_0600.docx">全方位新聞快報_20260429_0600</a></li>
+<li><a href="研究/晨間摘要_20260429_0200.docx">晨間摘要_20260429_0200</a></li>
+<li><a href="研究/591店面出租報告_20260429_0100.docx">591店面出租報告_20260429_0100</a></li>
+<li><a href="研究/即時新聞分類整理_20260428_0836.docx">即時新聞分類整理_20260428_0836</a></li>
+<li><a href="研究/全方位新聞快報_20260428_0821.docx">全方位新聞快報_20260428_0821</a></li>
+<li><a href="研究/晨間摘要_20260428_0200.docx">晨間摘要_20260428_0200</a></li>
+<li><a href="研究/591店面出租報告_20260428_0100.docx">591店面出租報告_20260428_0100</a></li>
+<li><a href="研究/晨間摘要_20260427_2117.docx">晨間摘要_20260427_2117</a></li>
+<li><a href="研究/貓咪研究社_20260427_0928.docx">貓咪研究社_20260427_0928</a></li>
+<li><a href="研究/全方位新聞快報_20260427_0600.docx">全方位新聞快報_20260427_0600</a></li>
+<li><a href="研究/591店面出租報告_20260427_0100.docx">591店面出租報告_20260427_0100</a></li>
+<li><a href="研究/deep_research_20260426_1122.docx">deep_research_20260426_1122</a></li>
+<li><a href="研究/startup_ideas_20260426_1007.docx">startup_ideas_20260426_1007</a></li>
+<li><a href="研究/全方位新聞快報_20260426_0600.docx">全方位新聞快報_20260426_0600</a></li>
+<li><a href="研究/晨間摘要_20260426_0200.docx">晨間摘要_20260426_0200</a></li>
+<li><a href="研究/591店面出租報告_20260426_0100.docx">591店面出租報告_20260426_0100</a></li>
+<li><a href="研究/全方位新聞快報_20260425_0600.docx">全方位新聞快報_20260425_0600</a></li>
+<li><a href="研究/晨間摘要_20260425_0200.docx">晨間摘要_20260425_0200</a></li>
+<li><a href="研究/591店面出租報告_20260425_0100.docx">591店面出租報告_20260425_0100</a></li>
+<li><a href="研究/週末行程規劃_20260424_1602.docx">週末行程規劃_20260424_1602</a></li>
+<li><a href="研究/貓咪研究社_20260424_1541.docx">貓咪研究社_20260424_1541</a></li>
+<li><a href="研究/全方位新聞快報_20260424_0600.docx">全方位新聞快報_20260424_0600</a></li>
+<li><a href="研究/科技新知_20260424_0300.docx">科技新知_20260424_0300</a></li>
+<li><a href="研究/晨間摘要_20260424_0200.docx">晨間摘要_20260424_0200</a></li>
+<li><a href="研究/591店面出租報告_20260424_0100.docx">591店面出租報告_20260424_0100</a></li>
+<li><a href="研究/川寶電子報_20260423_2353.docx">川寶電子報_20260423_2353</a></li>
+<li><a href="研究/中東局勢追蹤_即時版_20260423_1800.docx">中東局勢追蹤_即時版_20260423_1800</a></li>
+<li><a href="研究/科技新知_20260423_0620.docx">科技新知_20260423_0620</a></li>
+<li><a href="研究/全方位新聞快報_20260423_0600.docx">全方位新聞快報_20260423_0600</a></li>
+<li><a href="研究/晨間摘要_20260423_0200.docx">晨間摘要_20260423_0200</a></li>
+<li><a href="研究/591店面出租報告_20260423_0100.docx">591店面出租報告_20260423_0100</a></li>
+<li><a href="研究/中東局勢追蹤_即時版_20260422_1800.docx">中東局勢追蹤_即時版_20260422_1800</a></li>
+<li><a href="研究/科技新知_20260422_0835.docx">科技新知_20260422_0835</a></li>
+<li><a href="研究/全方位新聞快報_20260422_0600.docx">全方位新聞快報_20260422_0600</a></li>
+<li><a href="研究/晨間摘要_20260422_0200.docx">晨間摘要_20260422_0200</a></li>
+<li><a href="研究/591店面出租報告_20260422_0100.docx">591店面出租報告_20260422_0100</a></li>
+<li><a href="研究/中東局勢追蹤_即時版_20260421_1800.docx">中東局勢追蹤_即時版_20260421_1800</a></li>
+<li><a href="研究/科技新知_20260421_1649.docx">科技新知_20260421_1649</a></li>
+<li><a href="研究/晨間摘要_20260421_1638.docx">晨間摘要_20260421_1638</a></li>
+<li><a href="研究/全方位新聞快報_20260421_1620.docx">全方位新聞快報_20260421_1620</a></li>
+<li><a href="研究/591店面出租報告_20260421_1520.docx">591店面出租報告_20260421_1520</a></li>
+<li><a href="研究/創業方向與品牌經營_深度研究_20260505.docx">創業方向與品牌經營_深度研究_20260505</a></li>
+<li><a href="研究/cats_report_images.docx">cats_report_images</a></li>
+<li><a href="研究/健康醫療產業前景_深度研究_20260506.docx">健康醫療產業前景_深度研究_20260506</a></li>
+<li><a href="研究/drink_business_report.docx">drink_business_report</a></li>
+<li><a href="研究/門市店长能力模型_20260504.md">門市店长能力模型_20260504</a></li>
+<li><a href="研究/遠距工作與自由工作者_深度研究_20260505.docx">遠距工作與自由工作者_深度研究_20260505</a></li>
+<li><a href="研究/biotech_report_20260426.docx">biotech_report_20260426</a></li>
+<li><a href="研究/promotion_summary_20260425.docx">promotion_summary_20260425</a></li>
+<li><a href="研究/startup_ideas_report.docx">startup_ideas_report</a></li>
+<li><a href="研究/川普電子報_20260424_FINAL.docx">川普電子報_20260424_FINAL</a></li>
+<li><a href="研究/健康新知_20260427.docx">健康新知_20260427</a></li>
+<li><a href="研究/us_stock_next_week.docx">us_stock_next_week</a></li>
+<li><a href="研究/handshake_ai_top5_final.docx">handshake_ai_top5_final</a></li>
+<li><a href="研究/每週全方位報告_20260504.docx">每週全方位報告_20260504</a></li>
+<li><a href="研究/台北市房價趨勢分析_文山區景美萬隆_20260503.docx">台北市房價趨勢分析_文山區景美萬隆_20260503</a></li>
+<li><a href="研究/領隊因應AI時代來臨研究報告_20260512.docx">領隊因應AI時代來臨研究報告_20260512</a></li>
+<li><a href="研究/綠能產業與ESG投資_深度研究_20260507.docx">綠能產業與ESG投資_深度研究_20260507</a></li>
+<li><a href="研究/formosa_report_20260426.docx">formosa_report_20260426</a></li>
+<li><a href="研究/川普電子報_20260424_v4.docx">川普電子報_20260424_v4</a></li>
+<li><a href="研究/手搖飲加盟品牌詳細比較_20260504.docx">手搖飲加盟品牌詳細比較_20260504</a></li>
+<li><a href="研究/川普電子報_20260424.docx">川普電子報_20260424</a></li>
+<li><a href="研究/trump_newsletter_20260427.docx">trump_newsletter_20260427</a></li>
+<li><a href="研究/promotion_summary_table_20260425.docx">promotion_summary_table_20260425</a></li>
+<li><a href="研究/先找人還是先找店面_20260504.md">先找人還是先找店面_20260504</a></li>
+<li><a href="研究/台北市房價趨勢分析_20260503.docx">台北市房價趨勢分析_20260503</a></li>
+<li><a href="研究/openclaw_startup_report.docx">openclaw_startup_report</a></li>
+<li><a href="研究/創業者個人品牌與自媒體變現研究_20260505.docx">創業者個人品牌與自媒體變現研究_20260505</a></li>
+<li><a href="研究/川普電子報_20260503.docx">川普電子報_20260503</a></li>
+<li><a href="研究/數位行銷策略與案例_深度研究_20260505.docx">數位行銷策略與案例_深度研究_20260505</a></li>
+<li><a href="研究/龍井區房價與農地趨勢研究報告_20260503.docx">龍井區房價與農地趨勢研究報告_20260503</a></li>
+<li><a href="研究/ai_auto_franchise_handshake_report.docx">ai_auto_franchise_handshake_report</a></li>
+<li><a href="研究/川普電子報_20260424_v3.docx">川普電子報_20260424_v3</a></li>
+<li><a href="研究/品牌經營與顧客體驗_深度研究_20260505.docx">品牌經營與顧客體驗_深度研究_20260505</a></li>
+<li><a href="研究/人際關係與情感溝通_深度研究_20260505.docx">人際關係與情感溝通_深度研究_20260505</a></li>
+<li><a href="研究/cats_report.docx">cats_report</a></li>
+<li><a href="研究/ai_trend_q2_2026.docx">ai_trend_q2_2026</a></li>
+<li><a href="研究/組長面談重點_20260504.md">組長面談重點_20260504</a></li>
+<li><a href="研究/健康醫療產業前景與保健趨勢_20260504.docx">健康醫療產業前景與保健趨勢_20260504</a></li>
+<li><a href="研究/財富自由人生規劃_深度研究_20260507.docx">財富自由人生規劃_深度研究_20260507</a></li>
+<li><a href="研究/taiwan_40k_report_20260426.docx">taiwan_40k_report_20260426</a></li>
+<li><a href="研究/每週全方位報告_20260427.docx">每週全方位報告_20260427</a></li>
+<li><a href="研究/promotion_summary_v3_20260425.docx">promotion_summary_v3_20260425</a></li>
+<li><a href="研究/飲料加盟品牌比較.md">飲料加盟品牌比較</a></li>
+<li><a href="研究/startup_ideas_20260427.docx">startup_ideas_20260427</a></li>
+<li><a href="研究/taiwan_stock_deep_research.docx">taiwan_stock_deep_research</a></li>
+<li><a href="研究/台灣財富排名深度研究_20260507.md">台灣財富排名深度研究_20260507</a></li>
+<li><a href="研究/storage_report_20260426.docx">storage_report_20260426</a></li>
+<li><a href="研究/startup_ideas_report_v2.docx">startup_ideas_report_v2</a></li>
+<li><a href="研究/make_money_report.docx">make_money_report</a></li>
+<li><a href="研究/notion_analysis_report.docx">notion_analysis_report</a></li>
+<li><a href="研究/時間管理與工作效率_深度研究_20260505.docx">時間管理與工作效率_深度研究_20260505</a></li>
+<li><a href="研究/drink_brand_report.docx">drink_brand_report</a></li>
+<li><a href="研究/tech_stock_q2_2026.docx">tech_stock_q2_2026</a></li>
+<li><a href="研究/台灣房地產市場分析_深度研究_20260505.docx">台灣房地產市場分析_深度研究_20260505</a></li>
+<li><a href="研究/壓力管理與心理健康_深度研究_20260505.docx">壓力管理與心理健康_深度研究_20260505</a></li>
+<li><a href="研究/川普電子報_20260424_v5.docx">川普電子報_20260424_v5</a></li>
+<li><a href="研究/創業生產力建議_20260504.md">創業生產力建議_20260504</a></li>
+<li><a href="研究/合夥人架構_組長不出錢_20260504.md">合夥人架構_組長不出錢_20260504</a></li>
+<li><a href="研究/hotpot_deep_research.docx">hotpot_deep_research</a></li>
+<li><a href="研究/品牌經營與顧客體驗優化方法_深度研究報告_20260503_v2.docx">品牌經營與顧客體驗優化方法_深度研究報告_20260503_v2</a></li>
+<li><a href="研究/台灣財富排名深度研究_20260507_完整版.docx">台灣財富排名深度研究_20260507_完整版</a></li>
+<li><a href="研究/川普電子報_20260424_vFINAL.docx">川普電子報_20260424_vFINAL</a></li>
+<li><a href="研究/川普電子報_20260424_v2.docx">川普電子報_20260424_v2</a></li>
+<li><a href="研究/自我成長與學習方法_深度研究_20260505.docx">自我成長與學習方法_深度研究_20260505</a></li>
+<li><a href="研究/職場發展與專業技能_深度研究_20260505.docx">職場發展與專業技能_深度研究_20260505</a></li>
+<li><a href="研究/台灣財富等級深度研究_20260507.docx">台灣財富等級深度研究_20260507</a></li>
+<li><a href="研究/ai_auto_franchise_report.docx">ai_auto_franchise_report</a></li>
+<li><a href="研究/hotpot_franchise_report.docx">hotpot_franchise_report</a></li>
+</ul>
+<p><a href="/">返回首頁 →</a></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "toc.integrate", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../js/search_suggestions.js"></script>
+      
+    
+  </body>
+</html>
