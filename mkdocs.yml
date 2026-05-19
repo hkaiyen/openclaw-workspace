@@ -36,6 +36,8 @@ nav:
   - 首頁: index.md
   - 報告列表:
     - reports/index.md
+  - 🎮 遊戲專區:
+    - games/index.md
 
 plugins:
   - search
