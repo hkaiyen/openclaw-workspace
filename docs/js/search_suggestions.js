@@ -1,16 +1,5 @@
-// 熱門搜尋關鍵字 suggestions
-const popularSearches = [
-    { keyword: "股票", emoji: "📈", count: 48 },
-    { keyword: "新聞", emoji: "📰", count: 30 },
-    { keyword: "產業", emoji: "💡", count: 25 },
-    { keyword: "健康", emoji: "🍎", count: 20 },
-    { keyword: "財報", emoji: "💹", count: 15 },
-    { keyword: "餐廳", emoji: "🍽️", count: 5 },
-    { keyword: "心理", emoji: "🧠", count: 8 },
-    { keyword: "美食", emoji: "🍜", count: 6 },
-    { keyword: "投資", emoji: "📊", count: 12 },
-    { keyword: "科技", emoji: "🚀", count: 3 }
-];
+// 搜尋歷史記錄功能（已停用熱門搜尋按鈕）
+const popularSearches = [];
 
 // 儲存搜尋歷史到 localStorage
 function saveSearchHistory(keyword) {
