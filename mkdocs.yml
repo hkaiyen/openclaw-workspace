@@ -2,20 +2,21 @@ site_name: 小安研究團隊每日報告
 site_description: 小安研究團隊每日報告自動發布平台
 site_author: 小安研究團隊
 site_url: https://reportssite.vercel.app
+site_logo: https://cdn-icons-png.flaticon.com/512/2103/2103633.png
 
 theme:
   name: material
   language: zh
   palette:
     - scheme: default
-      primary: indigo
-      accent: blue
+      primary: teal
+      accent: amber
       toggle:
         icon: material/brightness-7
         name: 切換深色模式
     - scheme: slate
-      primary: blue
-      accent: indigo
+      primary: teal
+      accent: amber
       toggle:
         icon: material/brightness-4
         name: 切換淺色模式
@@ -34,19 +35,21 @@ theme:
 
 nav:
   - 🏠 首頁: index.md
-  - 📈 股市與投資: reports/股市/
-  - 📚 研究報告: reports/研究/
+  - 📈 股市與投資: reports/股市.md
+  - 📚 研究報告: reports/研究.md
   - 💡 創業專區: reports/創業.md
-  - 🛒 促銷報告: reports/促銷/
-  - 📰 新聞快報: reports/新聞/
-  - 💡 產業研究: reports/產業研究/
-  - 🚀 科技新知: reports/科技新知/
-  - 🏥 健康專欄: reports/健康專欄/
-  - 📚 專題報告: reports/專題報告/
+  - 🛒 促銷報告: reports/促銷.md
+  - 📰 新聞快報: reports/新聞.md
+  - 💡 產業研究: reports/產業研究.md
+  - 🚀 科技新知: reports/科技新知.md
+  - 🏥 健康專欄: reports/健康專欄.md
+  - 📚 專題報告: reports/專題報告.md
   - 🎮 遊戲專區: games/index.md
 
 plugins:
   - search
+  - minify:
+      minify_html: true
 
 extra_css:
   - stylesheets/extra.css
