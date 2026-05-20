@@ -1,0 +1,1477 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="小安研究團隊每日報告自動發布平台">
+      
+      
+        <meta name="author" content="小安研究團隊">
+      
+      
+        <link rel="canonical" href="https://reportssite.vercel.app/reports/%E5%85%B6%E4%BB%96/line_queue_core_features_20260513/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>LINE 餐廳候補位系統 - Phase 4 核心功能開發報告 - 小安研究團隊每日報告</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+TC:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Noto Sans TC";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#line-phase-4" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="小安研究團隊每日報告" class="md-header__button md-logo" aria-label="小安研究團隊每日報告" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            小安研究團隊每日報告
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              LINE 餐廳候補位系統 - Phase 4 核心功能開發報告
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="切換深色模式"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="切換深色模式" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo"  aria-label="切換淺色模式"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="切換淺色模式" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  🏠 首頁
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../%E6%96%B0%E8%81%9E/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  📰 新聞快報
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../%E8%82%A1%E5%B8%82/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  📈 股市投資
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../%E7%A0%94%E7%A9%B6/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  📚 研究報告
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../%E7%94%A2%E6%A5%AD%E7%A0%94%E7%A9%B6/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  💡 產業研究
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../%E5%89%B5%E6%A5%AD/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  💡 創業專區
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../%E4%BF%83%E9%8A%B7/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  🛒 促銷報告
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../%E7%A7%91%E6%8A%80%E6%96%B0%E7%9F%A5/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  🚀 科技新知
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../%E5%81%A5%E5%BA%B7%E5%B0%88%E6%AC%84/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  🏥 健康專欄
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../%E5%B0%88%E9%A1%8C%E5%A0%B1%E5%91%8A/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  📚 專題報告
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../games/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  🎮 遊戲專區
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="小安研究團隊每日報告" class="md-nav__button md-logo" aria-label="小安研究團隊每日報告" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    小安研究團隊每日報告
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🏠 首頁
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E6%96%B0%E8%81%9E/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📰 新聞快報
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E8%82%A1%E5%B8%82/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📈 股市投資
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E7%A0%94%E7%A9%B6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📚 研究報告
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E7%94%A2%E6%A5%AD%E7%A0%94%E7%A9%B6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    💡 產業研究
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%89%B5%E6%A5%AD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    💡 創業專區
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E4%BF%83%E9%8A%B7/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🛒 促銷報告
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E7%A7%91%E6%8A%80%E6%96%B0%E7%9F%A5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🚀 科技新知
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%81%A5%E5%BA%B7%E5%B0%88%E6%AC%84/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🏥 健康專欄
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%B0%88%E9%A1%8C%E5%A0%B1%E5%91%8A/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📚 專題報告
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../games/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🎮 遊戲專區
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="line-phase-4">LINE 餐廳候補位系統 - Phase 4 核心功能開發報告<a class="headerlink" href="#line-phase-4" title="Permanent link">&para;</a></h1>
+<p><strong>文件版本：</strong> 1.0<br />
+<strong>日期：</strong> 2026-05-13<br />
+<strong>作者：</strong> 小咪技術研發助理<br />
+<strong>適用時區：</strong> Asia/Taipei (GMT+8)</p>
+<hr />
+<h2 id="_1">一、任務概述<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>Phase 4 完成了 LINE 餐廳候補位系統的核心功能開發，包含 LIFF 前端頁面、餐廳管理後台、以及核心商業邏輯服務。</p>
+<hr />
+<h2 id="_2">二、產出檔案清單<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<h3 id="21-liff">2.1 LIFF 前端頁面（消費者端）<a class="headerlink" href="#21-liff" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>檔案路徑</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>public/liff/queue/join.html</code></td>
+<td>加入排隊頁面</td>
+</tr>
+<tr>
+<td><code>public/liff/queue/status.html</code></td>
+<td>排隊進度查詢頁面</td>
+</tr>
+<tr>
+<td><code>public/liff/reservation/book.html</code></td>
+<td>線上預約頁面</td>
+</tr>
+<tr>
+<td><code>public/liff/reservation/my.html</code></td>
+<td>我的預約頁面</td>
+</tr>
+</tbody>
+</table>
+<h3 id="22">2.2 餐廳管理後台<a class="headerlink" href="#22" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>檔案路徑</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>public/admin/index.html</code></td>
+<td>餐廳管理後台主頁面（包含儀表板、排隊管理、預約管理、設定）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="23">2.3 核心服務層<a class="headerlink" href="#23" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>檔案路徑</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/services/queueService.js</code></td>
+<td>排隊服務（加入排隊、叫號、順位計算）</td>
+</tr>
+<tr>
+<td><code>src/services/reservationService.js</code></td>
+<td>預約服務（建立預約、取消、時間衝突檢查）</td>
+</tr>
+<tr>
+<td><code>src/services/notificationService.js</code></td>
+<td>通知服務（叫號通知、預約提醒、過號提醒）</td>
+</tr>
+<tr>
+<td><code>src/services/index.js</code></td>
+<td>服務層匯出模組</td>
+</tr>
+</tbody>
+</table>
+<h3 id="24">2.4 路由整合<a class="headerlink" href="#24" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>檔案路徑</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/routes/index.js</code></td>
+<td>路由整合模組（LIFF 頁面路由 + API 路由）</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="liff">三、LIFF 前端頁面功能<a class="headerlink" href="#liff" title="Permanent link">&para;</a></h2>
+<h3 id="31-joinhtml">3.1 加入排隊頁面（join.html）<a class="headerlink" href="#31-joinhtml" title="Permanent link">&para;</a></h3>
+<p><strong>功能說明：</strong>
+- 顯示餐廳列表（包含等候人數）
+- 選擇餐廳、填寫用餐人數、備註
+- 提交後顯示排隊成功訊息（號碼、預估等候時間）
+- 失敗時顯示錯誤訊息</p>
+<p><strong>技術特點：</strong>
+- 使用原生 HTML + CSS + JavaScript（無框架依賴）
+- LIFF SDK 初始化並取得使用者資料
+- 示範模式：網路失敗時使用假資料展示功能
+- 響應式設計，適合手機瀏覽</p>
+<p><strong>UI 元件：</strong>
+- 餐廳選擇器（Radio button 清單）
+- 人數下拉選單（1-10 人）
+- 備註文字區塊
+- 成功彈窗（顯示號碼與順位）</p>
+<h3 id="32-statushtml">3.2 排隊進度頁面（status.html）<a class="headerlink" href="#32-statushtml" title="Permanent link">&para;</a></h3>
+<p><strong>功能說明：</strong>
+- 顯示目前排隊號碼與順位
+- 即時更新排隊狀態（等待中/已叫號/已入座）
+- 被叫號時顯示通知彈窗
+- 可取消排隊
+- 自動每 30 秒更新狀態</p>
+<p><strong>技術特點：</strong>
+- Polling 機制定期更新狀態
+- 叫號時自動彈出通知
+- 支援 URL 參數傳入 restaurantId
+- 歷史排隊記錄查詢</p>
+<p><strong>UI 元件：</strong>
+- 排隊號碼大字顯示
+- 順位與預估等候時間卡片
+- 狀態標籤（等待中/已叫號/已入座）
+- 叫號通知全屏彈窗</p>
+<h3 id="33-bookhtml">3.3 線上預約頁面（book.html）<a class="headerlink" href="#33-bookhtml" title="Permanent link">&para;</a></h3>
+<p><strong>功能說明：</strong>
+- 選擇餐廳、日期、時間、人數
+- 可填寫備註（過敏原、慶生等）
+- 提交後顯示預約成功確認
+- 日期選擇限制（今天起 30 天內）</p>
+<p><strong>技術特點：</strong>
+- 日期選擇器（min/max 限制）
+- 時間選擇（午/晚餐時段）
+- 與 Phase 3 預約 API 整合</p>
+<p><strong>UI 元件：</strong>
+- 餐廳選擇清單
+- 日期選擇器
+- 時間選擇下拉選單
+- 人數選擇
+- 預約成功確認彈窗</p>
+<h3 id="34-myhtml">3.4 我的預約頁面（my.html）<a class="headerlink" href="#34-myhtml" title="Permanent link">&para;</a></h3>
+<p><strong>功能說明：</strong>
+- 顯示即將到來的預約與歷史記錄
+- 切換標籤（ upcoming / past）
+- 可取消未到來的預約
+- 顯示預約狀態（已確認/已入座/已取消/未到場）</p>
+<p><strong>技術特點：</strong>
+- Tab 切換即將到來/歷史記錄
+- 取消二次確認機制
+- 預約狀態即時更新</p>
+<p><strong>UI 元件：</strong>
+- Tab 篩選器
+- 預約卡片（餐廳名稱、日期、時間、人數、狀態）
+- 取消確認彈窗</p>
+<hr />
+<h2 id="_3">四、餐廳管理後台功能<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<h3 id="41-dashboard">4.1 儀表板（Dashboard）<a class="headerlink" href="#41-dashboard" title="Permanent link">&para;</a></h3>
+<p><strong>功能說明：</strong>
+- 即時統計（等待中/已叫號/已入座/今日預約）
+- 叫號面板（叫下一位/叫指定號碼）
+- 排隊名單即時顯示</p>
+<p><strong>技術特點：</strong>
+- 即時更新統計數字
+- 叫號後自動刷新名單
+- 示範資料展示</p>
+<p><strong>UI 元件：</strong>
+- 4 格統計卡片
+- 叫號按鈕面板
+- 排隊名單（可滑動）</p>
+<h3 id="42-queue-management">4.2 排隊管理（Queue Management）<a class="headerlink" href="#42-queue-management" title="Permanent link">&para;</a></h3>
+<p><strong>功能說明：</strong>
+- 表格顯示所有排隊資料
+- 可針對個別排隊執行：叫號、入座、過號、移除
+- 狀態篩選</p>
+<p><strong>技術特點：</strong>
+- 表格化排隊名單
+- 狀態色彩標示
+- 快速操作按鈕</p>
+<h3 id="43-reservations">4.3 預約管理（Reservations）<a class="headerlink" href="#43-reservations" title="Permanent link">&para;</a></h3>
+<p><strong>功能說明：</strong>
+- 查看今日/明日/本週預約
+- 標記預約入座
+- 電話聯絡功能</p>
+<p><strong>技術特點：</strong>
+- 日期篩選
+- 預約狀態標示</p>
+<h3 id="44-settings">4.4 基本設定（Settings）<a class="headerlink" href="#44-settings" title="Permanent link">&para;</a></h3>
+<p><strong>功能說明：</strong>
+- 餐廳名稱、電話、地址設定
+- 座位數、平均用餐時長、排隊上限設定
+- 儲存設定至資料庫</p>
+<hr />
+<h2 id="_4">五、核心服務層設計<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<h3 id="51-queueservice">5.1 排隊服務（QueueService）<a class="headerlink" href="#51-queueservice" title="Permanent link">&para;</a></h3>
+<p><strong>主要函數：</strong></p>
+<table>
+<thead>
+<tr>
+<th>函數</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>joinQueue()</code></td>
+<td>加入排隊、檢查重複、檢查人數上限、發送通知</td>
+</tr>
+<tr>
+<td><code>cancelQueue()</code></td>
+<td>取消排隊（驗證所屬權限）</td>
+</tr>
+<tr>
+<td><code>callNext()</code></td>
+<td>叫下一位、發送 LINE 通知</td>
+</tr>
+<tr>
+<td><code>callSpecific()</code></td>
+<td>叫指定號碼、發送 LINE 通知</td>
+</tr>
+<tr>
+<td><code>markAsServed()</code></td>
+<td>標記入座</td>
+</tr>
+<tr>
+<td><code>markAsNoShow()</code></td>
+<td>標記過號</td>
+</tr>
+<tr>
+<td><code>calculateQueuePosition()</code></td>
+<td>計算排隊順位</td>
+</tr>
+<tr>
+<td><code>getQueueStatus()</code></td>
+<td>取得排隊狀態</td>
+</tr>
+<tr>
+<td><code>getQueueStats()</code></td>
+<td>取得排隊統計</td>
+</tr>
+</tbody>
+</table>
+<p><strong>商業邏輯：</strong>
+- 加入排隊前檢查：餐廳是否存在、是否重複排隊、排隊人數是否已滿
+- 叫號時自動發送 LINE 推播通知消費者
+- 順位計算：前方有多少組正在等待</p>
+<h3 id="52-reservationservice">5.2 預約服務（ReservationService）<a class="headerlink" href="#52-reservationservice" title="Permanent link">&para;</a></h3>
+<p><strong>主要函數：</strong></p>
+<table>
+<thead>
+<tr>
+<th>函數</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>createReservation()</code></td>
+<td>建立預約、檢查時間衝突、發送確認通知</td>
+</tr>
+<tr>
+<td><code>cancelReservation()</code></td>
+<td>取消預約（驗證權限與狀態）</td>
+</tr>
+<tr>
+<td><code>checkTimeConflict()</code></td>
+<td>檢查預約時間是否衝突（30 分鐘緩衝）</td>
+</tr>
+<tr>
+<td><code>getMyReservations()</code></td>
+<td>取得消費者的預約列表</td>
+</tr>
+<tr>
+<td><code>markAsSeated()</code></td>
+<td>標記已入座</td>
+</tr>
+<tr>
+<td><code>markAsNoShow()</code></td>
+<td>標記過號</td>
+</tr>
+<tr>
+<td><code>getReservationsByRestaurant()</code></td>
+<td>取得餐廳的預約列表</td>
+</tr>
+<tr>
+<td><code>sendReminder()</code></td>
+<td>發送預約提醒</td>
+</tr>
+</tbody>
+</table>
+<p><strong>商業邏輯：</strong>
+- 預約時間衝突檢查：同一餐廳同時間段（前後 30 分鐘）不得超過座位數
+- 取消限制：已入座或已取消的預約無法再取消
+- 預約提醒：可對已確認的預約發送提醒</p>
+<h3 id="53-notificationservice">5.3 通知服務（NotificationService）<a class="headerlink" href="#53-notificationservice" title="Permanent link">&para;</a></h3>
+<p><strong>主要函數：</strong></p>
+<table>
+<thead>
+<tr>
+<th>函數</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sendCallNotification()</code></td>
+<td>發送叫號通知</td>
+</tr>
+<tr>
+<td><code>sendQueueJoinedNotification()</code></td>
+<td>發送排隊成功通知</td>
+</tr>
+<tr>
+<td><code>sendReservationConfirmedNotification()</code></td>
+<td>發送預約確認通知</td>
+</tr>
+<tr>
+<td><code>sendReservationReminder()</code></td>
+<td>發送預約提醒</td>
+</tr>
+<tr>
+<td><code>sendQueueCancelledNotification()</code></td>
+<td>發送排隊取消通知</td>
+</tr>
+<tr>
+<td><code>sendNoShowReminder()</code></td>
+<td>發送過號提醒</td>
+</tr>
+<tr>
+<td><code>sendBatch()</code></td>
+<td>批量發送通知</td>
+</tr>
+<tr>
+<td><code>getNotificationStats()</code></td>
+<td>取得通知統計</td>
+</tr>
+<tr>
+<td><code>retryFailedNotifications()</code></td>
+<td>重試失敗的通知</td>
+</tr>
+</tbody>
+</table>
+<p><strong>商業邏輯：</strong>
+- 所有通知皆使用 Flex Message 格式
+- 發送失敗時記錄至 notification_logs 資料表
+- 支援批量發送（用於促銷、公告等）
+- 失敗通知自動重試機制</p>
+<hr />
+<h2 id="_5">六、路由整合<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<h3 id="61-liff">6.1 LIFF 頁面路由<a class="headerlink" href="#61-liff" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>路徑</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td><code>/liff/queue/join</code></td>
+<td>加入排隊頁面</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/liff/queue/status</code></td>
+<td>排隊進度頁面</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/liff/reservation/book</code></td>
+<td>預約頁面</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/liff/reservation/my</code></td>
+<td>我的預約頁面</td>
+</tr>
+</tbody>
+</table>
+<h3 id="62">6.2 管理後台路由<a class="headerlink" href="#62" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>路徑</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td><code>/admin</code></td>
+<td>餐廳管理後台首頁</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/admin/settings</code></td>
+<td>餐廳設定頁面</td>
+</tr>
+</tbody>
+</table>
+<h3 id="63-api">6.3 API 路由<a class="headerlink" href="#63-api" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>路徑</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>POST</td>
+<td><code>/api/queue/call-next</code></td>
+<td>叫下一位</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/api/queue/call-specific</code></td>
+<td>叫指定號碼</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/api/queue/mark-served</code></td>
+<td>標記入座</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/api/queue/mark-no-show</code></td>
+<td>標記過號</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/queue/list/:restaurantId</code></td>
+<td>取得排隊名單</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/queue/stats/:restaurantId</code></td>
+<td>取得排隊統計</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/reservations/:restaurantId</code></td>
+<td>取得預約列表</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/api/reservations/mark-seated</code></td>
+<td>標記已入座</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/api/reservations/mark-no-show</code></td>
+<td>標記過號</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/notifications/:restaurantId</code></td>
+<td>取得通知歷史</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="phase-4">七、系統架構圖（Phase 4 完成後）<a class="headerlink" href="#phase-4" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>┌─────────────────────────────────────────────────────────────────┐
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>│                        使用者層                                  │
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>├─────────────────────────────────────────────────────────────────┤
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>│  [LINE App]  ◄──── LINE Official Account (機器人)               │
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>│     │              (LINE Messaging API + LINE Frontend Framework)│
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>│     │                                                             │
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>│  ┌──┴──────────────────────────────────────┐                    │
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│  │         LIFF 頁面（嵌入在 LINE 內）         │                    │
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>│  │  • join.html - 加入排隊                   │                    │
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>│  │  • status.html - 排隊進度                  │                    │
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>│  │  • book.html - 線上預約                    │                    │
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>│  │  • my.html - 我的預約                      │                    │
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>│  └──────────────────────────────────────────┘                    │
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>│                                                              │
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>│  ┌──────────────────────────────────────┐                    │
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>│  │         Admin 後台（瀏覽器）              │                    │
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>│  │  • index.html - 儀表板/排隊/預約/設定    │                    │
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>│  └──────────────────────────────────────────┘                    │
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>├─────────────────────────────────────────────────────────────────┤
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>│                       服務層                                     │
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>│  ┌────────────┐  ┌────────────┐  ┌────────────┐                │
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>│  │ queueService│  │reservService│  │notifService│               │
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>│  │            │  │            │  │            │                │
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>│  └────────────┘  └────────────┘  └────────────┘                │
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>├─────────────────────────────────────────────────────────────────┤
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>│                       路由層                                     │
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>│  src/routes/index.js                                           │
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>│  • LIFF 頁面路由                                                │
+<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>│  • Admin 頁面路由                                               │
+<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>│  • API 路由                                                     │
+<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>├─────────────────────────────────────────────────────────────────┤
+<a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>│                       資料層                                     │
+<a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>│  PostgreSQL ◄──── Repositories ◄──── Services                 │
+<a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>└─────────────────────────────────────────────────────────────────┘
+</code></pre></div>
+<hr />
+<h2 id="_6">八、技術特點<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<h3 id="81">8.1 前端技術<a class="headerlink" href="#81" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>無框架依賴</strong>：使用原生 HTML + CSS + JavaScript，降低學習曲線</li>
+<li><strong>響應式設計</strong>：支援手機（LIFF）與桌面（Admin）瀏覽</li>
+<li><strong>LIFF SDK 整合</strong>：標準 LINE LIFF 初始化流程</li>
+<li><strong>示範模式</strong>：網路失敗時使用假資料展示功能，提升開發體驗</li>
+</ul>
+<h3 id="82">8.2 後端技術<a class="headerlink" href="#82" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>服務導向架構</strong>：商業邏輯封裝於 Service 層</li>
+<li><strong>Repository 模式</strong>：資料存取封裝於 Repository 層</li>
+<li><strong>路由集中管理</strong>：所有頁面與 API 路由於 <code>src/routes/index.js</code></li>
+<li><strong>錯誤處理</strong>：統一的錯誤回應格式與例外處理</li>
+</ul>
+<h3 id="83-liff">8.3 LIFF 整合<a class="headerlink" href="#83-liff" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>無痛初始化</strong>：嘗試 LIFF 登入，失敗時使用 URL 參數 fallback</li>
+<li><strong>訊息傳送</strong>：使用 <code>liff.sendMessages()</code> 與 Bot 互動</li>
+<li><strong>外部開窗</strong>：使用 <code>liff.openWindow()</code> 開啟連結</li>
+</ul>
+<hr />
+<h2 id="_7">九、已知限制<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>說明</th>
+<th>建議改進</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>無即時更新</td>
+<td>目前使用 polling，未使用 WebSocket</td>
+<td>可加入 Socket.io 或 Redis Pub/Sub</td>
+</tr>
+<tr>
+<td>無使用者認證</td>
+<td>Admin 後台無登入機制</td>
+<td>可加入 Basic Auth 或 JWT</td>
+</tr>
+<tr>
+<td>無操作日誌</td>
+<td>餐廳操作（叫號、標記）無完整日誌</td>
+<td>加入操作日誌資料表</td>
+</tr>
+<tr>
+<td>無權限管理</td>
+<td>Admin 同一權限等級</td>
+<td>可加入角色（Admin/Manager/Staff）</td>
+</tr>
+<tr>
+<td>無資料匯出</td>
+<td>排隊/預約資料無匯出功能</td>
+<td>加入 CSV/Excel 匯出</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="phase-5">十、下一步（Phase 5 建議）<a class="headerlink" href="#phase-5" title="Permanent link">&para;</a></h2>
+<p>Phase 4 完成後，建議進入以下項目：</p>
+<h3 id="101">10.1 生產環境準備<a class="headerlink" href="#101" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>LINE 官方設定</strong></li>
+<li>申請正式 LIFF ID 並設定至程式碼</li>
+<li>設定 Rich Menu 綁定至 LIFF 頁面</li>
+<li>
+<p>設定 Webhook URL 至 LINE Developers Console</p>
+</li>
+<li>
+<p><strong>安全性強化</strong></p>
+</li>
+<li>Admin 後台加入登入驗證</li>
+<li>Webhook 簽章驗證確保安全</li>
+<li>
+<p>LINE Channel Secret 安全儲存</p>
+</li>
+<li>
+<p><strong>效能優化</strong></p>
+</li>
+<li>Redis 整合（排隊名單快取）</li>
+<li>資料庫索引優化</li>
+<li>連線池設定調優</li>
+</ol>
+<h3 id="102">10.2 功能擴展<a class="headerlink" href="#102" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>即時通知</strong></li>
+<li>WebSocket 或 Server-Sent Events 即時更新</li>
+<li>
+<p>Redis Pub/Sub 實現跨實例通知</p>
+</li>
+<li>
+<p><strong>報表功能</strong></p>
+</li>
+<li>來客數統計</li>
+<li>等候時間分析</li>
+<li>
+<p>高峰時段統計</p>
+</li>
+<li>
+<p><strong>消費者端優化</strong></p>
+</li>
+<li>排隊預估時間更精準</li>
+<li>過號處理邏輯優化</li>
+<li>
+<p>預約修改功能</p>
+</li>
+<li>
+<p><strong>多店支援</strong></p>
+</li>
+<li>連鎖餐廳管理</li>
+<li>店鋪間排隊轉移</li>
+</ol>
+<hr />
+<h2 id="phase-4_1">十一、檔案總覽（Phase 4 新增）<a class="headerlink" href="#phase-4_1" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>line_queue/
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>├── public/
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>│   ├── liff/
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>│   │   ├── queue/
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>│   │   │   ├── join.html           # 加入排隊頁面（新增）
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>│   │   │   └── status.html         # 排隊進度頁面（新增）
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>│   │   └── reservation/
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>│   │       ├── book.html           # 線上預約頁面（新增）
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>│   │       └── my.html             # 我的預約頁面（新增）
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>│   └── admin/
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>│       └── index.html              # 餐廳管理後台（新增）
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>├── src/
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>│   ├── services/                   # 核心商業邏輯（新增）
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>│   │   ├── index.js                # 服務層匯出
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>│   │   ├── queueService.js         # 排隊服務
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>│   │   ├── reservationService.js    # 預約服務
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>│   │   └── notificationService.js   # 通知服務
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>│   └── routes/
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>│       └── index.js                # 路由整合模組（新增）
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>├── sql/                            # （Phase 2 已完成）
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>├── docker-compose.yml              # （Phase 2 已完成）
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>└── .env.example                    # （Phase 3 已完成）
+</code></pre></div>
+<hr />
+<p><strong>文件結尾</strong></p>
+<p>Phase 4 核心功能開發已全部完成。所有 LIFF 前端頁面、餐廳管理後台、以及核心商業邏輯服務均已就緒。系統已具備基本的候補位與預約功能，可進行整合測試與 LINE 官方設定。</p>
+<hr />
+<p><em>小咪技術研發助理｜2026-05-13</em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "toc.integrate", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../../js/search_suggestions.js"></script>
+      
+    
+  </body>
+</html>

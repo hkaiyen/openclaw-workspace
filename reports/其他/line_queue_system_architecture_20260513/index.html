@@ -1,0 +1,1820 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="小安研究團隊每日報告自動發布平台">
+      
+      
+        <meta name="author" content="小安研究團隊">
+      
+      
+        <link rel="canonical" href="https://reportssite.vercel.app/reports/%E5%85%B6%E4%BB%96/line_queue_system_architecture_20260513/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>LINE 餐廳候補位系統 - 系統架構設計書 - 小安研究團隊每日報告</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+TC:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Noto Sans TC";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#line-" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="小安研究團隊每日報告" class="md-header__button md-logo" aria-label="小安研究團隊每日報告" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            小安研究團隊每日報告
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              LINE 餐廳候補位系統 - 系統架構設計書
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="切換深色模式"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="切換深色模式" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo"  aria-label="切換淺色模式"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="切換淺色模式" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  🏠 首頁
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../%E6%96%B0%E8%81%9E/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  📰 新聞快報
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../%E8%82%A1%E5%B8%82/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  📈 股市投資
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../%E7%A0%94%E7%A9%B6/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  📚 研究報告
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../%E7%94%A2%E6%A5%AD%E7%A0%94%E7%A9%B6/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  💡 產業研究
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../%E5%89%B5%E6%A5%AD/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  💡 創業專區
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../%E4%BF%83%E9%8A%B7/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  🛒 促銷報告
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../%E7%A7%91%E6%8A%80%E6%96%B0%E7%9F%A5/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  🚀 科技新知
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../%E5%81%A5%E5%BA%B7%E5%B0%88%E6%AC%84/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  🏥 健康專欄
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../%E5%B0%88%E9%A1%8C%E5%A0%B1%E5%91%8A/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  📚 專題報告
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../games/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  🎮 遊戲專區
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="小安研究團隊每日報告" class="md-nav__button md-logo" aria-label="小安研究團隊每日報告" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    小安研究團隊每日報告
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🏠 首頁
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E6%96%B0%E8%81%9E/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📰 新聞快報
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E8%82%A1%E5%B8%82/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📈 股市投資
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E7%A0%94%E7%A9%B6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📚 研究報告
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E7%94%A2%E6%A5%AD%E7%A0%94%E7%A9%B6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    💡 產業研究
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%89%B5%E6%A5%AD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    💡 創業專區
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E4%BF%83%E9%8A%B7/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🛒 促銷報告
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E7%A7%91%E6%8A%80%E6%96%B0%E7%9F%A5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🚀 科技新知
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%81%A5%E5%BA%B7%E5%B0%88%E6%AC%84/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🏥 健康專欄
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%B0%88%E9%A1%8C%E5%A0%B1%E5%91%8A/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📚 專題報告
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../games/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🎮 遊戲專區
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="line-">LINE 餐廳候補位系統 - 系統架構設計書<a class="headerlink" href="#line-" title="Permanent link">&para;</a></h1>
+<p><strong>文件版本：</strong> 1.0<br />
+<strong>日期：</strong> 2026-05-13<br />
+<strong>作者：</strong> 小咪技術研發助理<br />
+<strong>適用時區：</strong> Asia/Taipei (GMT+8)</p>
+<hr />
+<h2 id="_1">一、系統概述<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<h3 id="11">1.1 系統定位<a class="headerlink" href="#11" title="Permanent link">&para;</a></h3>
+<p>LINE 餐廳候補位系統是一個 <strong>B2B2C 雙向平台</strong>，連接餐廳與消費者：</p>
+<ul>
+<li><strong>面向餐廳（餐廳管理系統）：</strong> 排隊管理、候位現場登記、通知發送、報表分析</li>
+<li><strong>面向消費者（LINE 應用）：</strong> LINE 官方帳號內直接預約、候補、查看排隊進度</li>
+</ul>
+<h3 id="12">1.2 核心價值主張<a class="headerlink" href="#12" title="Permanent link">&para;</a></h3>
+<ul>
+<li>消費者無需下載任何 APP，透過 LINE 即可完成所有操作</li>
+<li>餐廳可有效管理現場排隊，提升座位周轉率</li>
+<li>即時推播通知，減少消費者在現場久候的困擾</li>
+</ul>
+<hr />
+<h2 id="_2">二、需求分析<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<h3 id="21-b2b">2.1 B2B 餐廳需求<a class="headerlink" href="#21-b2b" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>需求項目</th>
+<th>說明</th>
+<th>優先級</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>現場候補登記</td>
+<td>消費者可現場掃 QR code 加入排隊</td>
+<td>Must have</td>
+</tr>
+<tr>
+<td>預約管理</td>
+<td>接受未來時間的訂位預約</td>
+<td>Must have</td>
+</tr>
+<tr>
+<td>叫號通知</td>
+<td>手動或自動叫號，並發送 LINE 通知</td>
+<td>Must have</td>
+</tr>
+<tr>
+<td>座位管理</td>
+<td>標記座位空/滿/待清理狀態</td>
+<td>Must have</td>
+</tr>
+<tr>
+<td>客戶管理</td>
+<td>查看消費者排隊/預約歷史</td>
+<td>Should have</td>
+</tr>
+<tr>
+<td>報表分析</td>
+<td>來客數、等候時間、高峰時段統計</td>
+<td>Should have</td>
+</tr>
+<tr>
+<td>多店支援</td>
+<td>支援連鎖餐廳多據點管理</td>
+<td>Nice to have</td>
+</tr>
+<tr>
+<td>API 串接</td>
+<td>對接餐廳現有 POS/ERP 系統</td>
+<td>Nice to have</td>
+</tr>
+</tbody>
+</table>
+<h3 id="22-b2c">2.2 B2C 消費者需求<a class="headerlink" href="#22-b2c" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>需求項目</th>
+<th>說明</th>
+<th>優先級</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>加入排隊</td>
+<td>從 LINE 官方帳號加入排隊名單</td>
+<td>Must have</td>
+</tr>
+<tr>
+<td>查看排隊進度</td>
+<td>即時查看前方等候組數</td>
+<td>Must have</td>
+</tr>
+<tr>
+<td>取消排隊</td>
+<td>臨時有事可取消排隊</td>
+<td>Must have</td>
+</tr>
+<tr>
+<td>預約未來時段</td>
+<td>可預約隔日或未來幾天的時段</td>
+<td>Must have</td>
+</tr>
+<tr>
+<td>接收通知</td>
+<td>被叫號時收到 LINE 推播通知</td>
+<td>Must have</td>
+</tr>
+<tr>
+<td>過號處理</td>
+<td>過號後可選擇重新排隊或繼續等候</td>
+<td>Should have</td>
+</tr>
+<tr>
+<td>我的預約</td>
+<td>查詢/修改/取消已預約的時段</td>
+<td>Should have</td>
+</tr>
+</tbody>
+</table>
+<h3 id="23-mvp">2.3 MVP 核心功能清單<a class="headerlink" href="#23-mvp" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>MVP 功能（6-10週開發）
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>餐廳端：
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>✅ 餐廳設定（基本資料、座位數、等候人數上限）
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>✅ 現場候補登記（掃 QR code 加入排隊）
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>✅ 叫號功能（下一位、手動叫指定號碼）
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>✅ LINE 推播通知消費者
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>✅ 排隊名單管理（查看名單、移除、標記）
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>消費者端：
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>✅ 加入排隊（從 LINE 官方帳號）
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>✅ 查看排隊進度
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>✅ 接收被叫號通知
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>✅ 取消排隊
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>✅ 預約未來時段
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>✅ 取消預約
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>LINE 官方帳號：
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>✅ 自動回應（關鍵字觸發功能選單）
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>✅ 推播訊息（叫號通知、排隊進度）
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>✅ LIFF 頁面（排隊、預約、表單）
+</code></pre></div>
+<hr />
+<h2 id="_3">三、系統架構設計<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<h3 id="31">3.1 整體架構圖<a class="headerlink" href="#31" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>┌─────────────────────────────────────────────────────────────────┐
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>│                        使用者層                                  │
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>├─────────────────────────────────────────────────────────────────┤
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>│  [LINE App]  ◄──── LINE Official Account (機器人)               │
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>│     │              (LINE Messaging API + LINE Frontend Framework)│
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>│     │                                                             │
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>│  ┌──┴──────────────────────────────────────┐                    │
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>│  │         LIFF 頁面（嵌入在 LINE 內）         │                    │
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>│  │  • 排隊登記表單                           │                    │
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>│  │  • 我的排隊/預約查詢                      │                    │
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>│  │  • 排隊進度顯示                           │                    │
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>│  └──────────────────────────────────────────┘                    │
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>├─────────────────────────────────────────────────────────────────┤
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>│                       API 閘道層                                  │
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>│              (LINE Messaging API Webhook)                        │
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>│                    Nginx / Cloudflare                            │
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>├─────────────────────────────────────────────────────────────────┤
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>│                       服務層                                     │
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>│  ┌────────────┐  ┌────────────┐  ┌────────────┐                │
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>│  │  LINE API  │  │  Web App   │  │  Background │                │
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>│  │  Service   │  │  Service   │  │  Job Worker │                │
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>│  │            │  │            │  │ (叫號排程)  │                │
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>│  └────────────┘  └────────────┘  └────────────┘                │
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>├─────────────────────────────────────────────────────────────────┤
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>│                       資料層                                     │
+<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>│  ┌────────────┐  ┌────────────┐  ┌────────────┐                │
+<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>│  │ PostgreSQL │  │  Redis     │  │ LINE API   │                │
+<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>│  │ (主資料庫)  │  │ (快取/佇列) │  │ (第三方)    │                │
+<a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a>│  └────────────┘  └────────────┘  └────────────┘                │
+<a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a>└─────────────────────────────────────────────────────────────────┘
+</code></pre></div>
+<h3 id="32">3.2 技術棧建議<a class="headerlink" href="#32" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>層級</th>
+<th>選擇</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>後端框架</strong></td>
+<td>Node.js + Express 或 Fastify</td>
+<td>處理非同步 IO 效率高，LINE SDK 生態完整</td>
+</tr>
+<tr>
+<td><strong>資料庫</strong></td>
+<td>PostgreSQL</td>
+<td>結構化資料，支援 JSON 欄位適合 LINE Flex Message</td>
+</tr>
+<tr>
+<td><strong>快取/佇列</strong></td>
+<td>Redis</td>
+<td>排隊名單快取、Pub/Sub 通知</td>
+</tr>
+<tr>
+<td><strong>雲端平台</strong></td>
+<td>GCP 或 AWS (台北 region)</td>
+<td>台北節點延遲最低， GCP Cloud Run 或 AWS ECS</td>
+</tr>
+<tr>
+<td><strong>容器化</strong></td>
+<td>Docker + Docker Compose</td>
+<td>方便本地開發與部署</td>
+</tr>
+<tr>
+<td><strong>前端（LIFF）</strong></td>
+<td>Vue 3 或 React</td>
+<td>輕量、支援 LINE LIFF SDK</td>
+</tr>
+<tr>
+<td><strong>LINE SDK</strong></td>
+<td><code>@line/bot-sdk</code> (Node.js)</td>
+<td>官方 Node.js SDK</td>
+</tr>
+</tbody>
+</table>
+<h3 id="33">3.3 系統元件說明<a class="headerlink" href="#33" title="Permanent link">&para;</a></h3>
+<h4 id="line-messaging-api-service">LINE Messaging API Service<a class="headerlink" href="#line-messaging-api-service" title="Permanent link">&para;</a></h4>
+<ul>
+<li>處理所有 LINE Webhook 事件（加入好友、收到訊息、點擊按鈕等）</li>
+<li>推送 Flex Message 訊息格式（富媒體卡片）給消費者</li>
+<li>管理 LINE Official Account 的回應模式</li>
+</ul>
+<h4 id="web-app-service">Web App Service（餐廳管理後台）<a class="headerlink" href="#web-app-service" title="Permanent link">&para;</a></h4>
+<ul>
+<li>React + Vite 前端，餐廳管理者操作介面</li>
+<li>即時更新排隊名單</li>
+<li>叫號操作觸發 LINE 推播</li>
+</ul>
+<h4 id="background-job-worker">Background Job Worker<a class="headerlink" href="#background-job-worker" title="Permanent link">&para;</a></h4>
+<ul>
+<li>處理定時任務：自動叫號、通知催單</li>
+<li>排隊順位自動往前遞進</li>
+</ul>
+<hr />
+<h2 id="_4">四、資料庫設計<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<h3 id="41-schema">4.1 資料表 Schema<a class="headerlink" href="#41-schema" title="Permanent link">&para;</a></h3>
+<h4 id="restaurants">餐廳資料表：<code>restaurants</code><a class="headerlink" href="#restaurants" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>欄位</th>
+<th>型別</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>UUID</td>
+<td>主鍵</td>
+</tr>
+<tr>
+<td>name</td>
+<td>VARCHAR(100)</td>
+<td>餐廳名稱</td>
+</tr>
+<tr>
+<td>line_channel_id</td>
+<td>VARCHAR(100)</td>
+<td>LINE Channel ID</td>
+</tr>
+<tr>
+<td>line_channel_secret</td>
+<td>VARCHAR(100)</td>
+<td>LINE Channel Secret (加密儲存)</td>
+</tr>
+<tr>
+<td>line_access_token</td>
+<td>TEXT</td>
+<td>LINE Long-lived Access Token</td>
+</tr>
+<tr>
+<td>address</td>
+<td>VARCHAR(200)</td>
+<td>地址</td>
+</tr>
+<tr>
+<td>phone</td>
+<td>VARCHAR(20)</td>
+<td>電話</td>
+</tr>
+<tr>
+<td>total_seats</td>
+<td>INT</td>
+<td>總座位數</td>
+</tr>
+<tr>
+<td>avg_meal_duration_minutes</td>
+<td>INT</td>
+<td>平均用餐時長（分鐘）</td>
+</tr>
+<tr>
+<td>queue_max_size</td>
+<td>INT</td>
+<td>排隊人數上限</td>
+</tr>
+<tr>
+<td>auto_call_enabled</td>
+<td>BOOLEAN</td>
+<td>是否自動叫號</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>TIMESTAMP</td>
+<td>建立時間</td>
+</tr>
+<tr>
+<td>updated_at</td>
+<td>TIMESTAMP</td>
+<td>更新時間</td>
+</tr>
+</tbody>
+</table>
+<h4 id="customers">消費者資料表：<code>customers</code><a class="headerlink" href="#customers" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>欄位</th>
+<th>型別</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>UUID</td>
+<td>主鍵</td>
+</tr>
+<tr>
+<td>line_user_id</td>
+<td>VARCHAR(100)</td>
+<td>LINE User ID（用於發送推播）</td>
+</tr>
+<tr>
+<td>display_name</td>
+<td>VARCHAR(100)</td>
+<td>LINE 顯示名稱</td>
+</tr>
+<tr>
+<td>phone</td>
+<td>VARCHAR(20)</td>
+<td>電話（可選）</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>TIMESTAMP</td>
+<td>建立時間</td>
+</tr>
+</tbody>
+</table>
+<h4 id="queue_entries">排隊資料表：<code>queue_entries</code><a class="headerlink" href="#queue_entries" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>欄位</th>
+<th>型別</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>UUID</td>
+<td>主鍵</td>
+</tr>
+<tr>
+<td>restaurant_id</td>
+<td>UUID</td>
+<td>關聯餐廳 FK</td>
+</tr>
+<tr>
+<td>customer_id</td>
+<td>UUID</td>
+<td>關聯消費者 FK</td>
+</tr>
+<tr>
+<td>queue_number</td>
+<td>INT</td>
+<td>排隊號碼</td>
+</tr>
+<tr>
+<td>status</td>
+<td>ENUM</td>
+<td>'waiting', 'called', 'served', 'cancelled', 'no_show'</td>
+</tr>
+<tr>
+<td>party_size</td>
+<td>INT</td>
+<td>用餐人數</td>
+</tr>
+<tr>
+<td>joined_at</td>
+<td>TIMESTAMP</td>
+<td>加入排隊時間</td>
+</tr>
+<tr>
+<td>called_at</td>
+<td>TIMESTAMP</td>
+<td>被叫號時間</td>
+</tr>
+<tr>
+<td>served_at</td>
+<td>TIMESTAMP</td>
+<td>入座時間</td>
+</tr>
+<tr>
+<td>notes</td>
+<td>TEXT</td>
+<td>備註（過敏原等）</td>
+</tr>
+<tr>
+<td>source</td>
+<td>ENUM</td>
+<td>'walk_in', 'reservation', 'waitlist'</td>
+</tr>
+</tbody>
+</table>
+<h4 id="reservations">預約資料表：<code>reservations</code><a class="headerlink" href="#reservations" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>欄位</th>
+<th>型別</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>UUID</td>
+<td>主鍵</td>
+</tr>
+<tr>
+<td>restaurant_id</td>
+<td>UUID</td>
+<td>關聯餐廳 FK</td>
+</tr>
+<tr>
+<td>customer_id</td>
+<td>UUID</td>
+<td>關聯消費者 FK</td>
+</tr>
+<tr>
+<td>reservation_date</td>
+<td>DATE</td>
+<td>預約日期</td>
+</tr>
+<tr>
+<td>reservation_time</td>
+<td>TIME</td>
+<td>預約時間</td>
+</tr>
+<tr>
+<td>party_size</td>
+<td>INT</td>
+<td>用餐人數</td>
+</tr>
+<tr>
+<td>status</td>
+<td>ENUM</td>
+<td>'confirmed', 'seated', 'cancelled', 'no_show'</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>TIMESTAMP</td>
+<td>建立時間</td>
+</tr>
+<tr>
+<td>notes</td>
+<td>TEXT</td>
+<td>備註</td>
+</tr>
+</tbody>
+</table>
+<h4 id="notification_logs">通知記錄資料表：<code>notification_logs</code><a class="headerlink" href="#notification_logs" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>欄位</th>
+<th>型別</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>UUID</td>
+<td>主鍵</td>
+</tr>
+<tr>
+<td>restaurant_id</td>
+<td>UUID</td>
+<td>關聯餐廳 FK</td>
+</tr>
+<tr>
+<td>customer_id</td>
+<td>UUID</td>
+<td>關聯消費者 FK</td>
+</tr>
+<tr>
+<td>queue_entry_id</td>
+<td>UUID</td>
+<td>關聯排隊 FK（可選）</td>
+</tr>
+<tr>
+<td>notification_type</td>
+<td>ENUM</td>
+<td>'queue_called', 'queue_cancelled', 'reminder', 'reservation_confirmed'</td>
+</tr>
+<tr>
+<td>line_message_id</td>
+<td>VARCHAR(100)</td>
+<td>LINE 訊息 ID</td>
+</tr>
+<tr>
+<td>sent_at</td>
+<td>TIMESTAMP</td>
+<td>發送時間</td>
+</tr>
+<tr>
+<td>status</td>
+<td>ENUM</td>
+<td>'sent', 'delivered', 'failed'</td>
+</tr>
+</tbody>
+</table>
+<h3 id="42-er">4.2 ER 關聯圖<a class="headerlink" href="#42-er" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>┌──────────────┐       ┌──────────────┐       ┌──────────────┐
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>│  restaurants │       │   customers  │       │ queue_entries│
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>│──────────────│       │──────────────│       │──────────────│
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>│ id (PK)      │       │ id (PK)     │       │ id (PK)     │
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>│ name         │       │ line_user_id │       │ restaurant_id│
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>│ line_channel │       │ display_name │       │ customer_id  │
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>│ ...          │       │ phone        │       │ queue_number │
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>└──────┬───────┘       └──────┬───────┘       └──────┬───────┘
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>       │                      │                      │
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>       │              ┌───────┴───────┐              │
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>       │              │               │              │
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>       └──────────────┴──┐         ┌──┴──────────────┘
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>                         │         │
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>                  ┌──────┴───────┐ │  ┌──────────────┐
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>                  │ reservations │ │  │notification_logs
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>                  │──────────────│ │  │──────────────│
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>                  │ id (PK)      │ │  │ id (PK)     │
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>                  │ restaurant_id│─┘  │ customer_id │
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>                  │ customer_id  │────│ queue_entry │
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>                  │ date/time    │    │ type/status │
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>                  └──────────────┘    └──────────────┘
+</code></pre></div>
+<hr />
+<h2 id="line-api">五、LINE API 串接規劃<a class="headerlink" href="#line-api" title="Permanent link">&para;</a></h2>
+<h3 id="51-line-api">5.1 需要的 LINE API 權限<a class="headerlink" href="#51-line-api" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>權限</th>
+<th>用途</th>
+<th>申請位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Messaging API</td>
+<td>發送推播、接收 Webhook 事件</td>
+<td>LINE Developers Console</td>
+</tr>
+<tr>
+<td>LINE Frontend Framework (LIFF)</td>
+<td>在 LINE 內嵌入 Web 頁面</td>
+<td>LINE Developers Console</td>
+</tr>
+<tr>
+<td>Rich Menu</td>
+<td>自訂選單（排隊/預約/查詢）</td>
+<td>LINE Developers Console</td>
+</tr>
+<tr>
+<td>QR Code Login (LINE Login)</td>
+<td>消費者身份驗證</td>
+<td>LINE Developers Console</td>
+</tr>
+</tbody>
+</table>
+<h3 id="52-line-messaging-api">5.2 LINE Messaging API 功能對應<a class="headerlink" href="#52-line-messaging-api" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>使用的 LINE API</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>加入排隊</td>
+<td>Reply API / Push API</td>
+<td>回應按鈕訊息，發送 Flex Message 確認</td>
+</tr>
+<tr>
+<td>排隊進度查詢</td>
+<td>Push API</td>
+<td>主動推播排隊順位變化</td>
+</tr>
+<tr>
+<td>叫號通知</td>
+<td>Push API</td>
+<td>叫號時主動推播消費者</td>
+</tr>
+<tr>
+<td>關鍵字回應</td>
+<td>Reply API</td>
+<td>消費者傳送關鍵字時自動回覆</td>
+</tr>
+<tr>
+<td>選單按鈕</td>
+<td>Flex Message / Quick Reply</td>
+<td>取代鍵盤輸入，直覺操作</td>
+</tr>
+</tbody>
+</table>
+<h3 id="53-liff">5.3 LIFF 頁面設計<a class="headerlink" href="#53-liff" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>LIFF 頁面</th>
+<th>用途</th>
+<th>路徑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>加入排隊</td>
+<td>填寫姓名、人數、備註</td>
+<td><code>/liff/queue/join</code></td>
+</tr>
+<tr>
+<td>我的排隊</td>
+<td>查看目前排隊狀態、順位</td>
+<td><code>/liff/queue/status</code></td>
+</tr>
+<tr>
+<td>預約時段</td>
+<td>選擇日期/時間/人数</td>
+<td><code>/liff/reservation/book</code></td>
+</tr>
+<tr>
+<td>我的預約</td>
+<td>查看/修改/取消預約</td>
+<td><code>/liff/reservation/my</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="54-webhook">5.4 Webhook 架構設計<a class="headerlink" href="#54-webhook" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>LINE Platform
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>     │
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>     │ POST /webhook (HTTPS)
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>     ▼
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>┌─────────────────────────┐
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>│   LINE Messaging API    │
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>│   Webhook Receiver      │
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>│   (Nginx → Express)     │
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>└───────────┬─────────────┘
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>            │
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>     ┌──────┴──────────┐
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>     │  Event Type     │
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>     ├─────────────────┤
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>     │ follow/unfollow │ → 更新顧客名單
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>     │ message         │ → 關鍵字回應 / 表單輸入
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>     │ postback        │ → 按鈕點擊（主要操作入口）
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>     │ beacon          │ → 進店偵測（進階功能）
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>     └─────────────────┘
+</code></pre></div>
+<h3 id="55">5.5 機器人功能流程圖<a class="headerlink" href="#55" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>消費者視角流程：
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>LINE 官方帳號
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>     │
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>     ▼
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>[加入好友] ──► 發送歡迎訊息 + 功能選單
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>     │
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>     ▼
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>[點擊「加入排隊」] ──► LIFF 頁面 → 填寫表單 → 確認排隊成功
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>     │
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>     ▼
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>[查看排隊進度] ──► 回傳目前順位 + 預估等待時間
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>     │
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>     ▼
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>[收到叫號通知] ──► 前往餐廳櫃檯報到
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>     │
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>     ▼
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>[入座] ──► 更新狀態為 served
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>
+<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a>餐廳視角流程：
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a>餐廳管理後台
+<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a>     │
+<a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a>     ▼
+<a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a>[手動叫號] ──► 點擊「叫下一位」──► 發送 LINE 推播給下一位消費者
+<a id="__codelineno-4-26" name="__codelineno-4-26" href="#__codelineno-4-26"></a>     │
+<a id="__codelineno-4-27" name="__codelineno-4-27" href="#__codelineno-4-27"></a>     ▼
+<a id="__codelineno-4-28" name="__codelineno-4-28" href="#__codelineno-4-28"></a>[收到消費者報到] ──► 更新為 seated
+<a id="__codelineno-4-29" name="__codelineno-4-29" href="#__codelineno-4-29"></a>     │
+<a id="__codelineno-4-30" name="__codelineno-4-30" href="#__codelineno-4-30"></a>     ▼
+<a id="__codelineno-4-31" name="__codelineno-4-31" href="#__codelineno-4-31"></a>[下一位自動往前遞進]
+</code></pre></div>
+<hr />
+<h2 id="line">六、LINE 官方帳號申請流程<a class="headerlink" href="#line" title="Permanent link">&para;</a></h2>
+<h3 id="1-line">步驟 1：建立 LINE 官方帳號<a class="headerlink" href="#1-line" title="Permanent link">&para;</a></h3>
+<ol>
+<li>前往 <a href="https://manager.line.biz/">LINE Official Account Manager</a></li>
+<li>選擇「建立官方帳號」</li>
+<li>填入帳號名稱（餐廳名稱）</li>
+<li>選擇帳號類型（官方帳號）</li>
+<li>類別選擇「餐飲」</li>
+</ol>
+<h3 id="2-messaging-api">步驟 2：申請 Messaging API<a class="headerlink" href="#2-messaging-api" title="Permanent link">&para;</a></h3>
+<ol>
+<li>進入 <a href="https://developers.line.biz/console/">LINE Developers Console</a></li>
+<li>選擇已建立的 Provider</li>
+<li>建立新 Channel → 選擇「Messaging API」</li>
+<li>填入必要的 Channel 資料</li>
+<li>等待審核（約 1-3 工作天）</li>
+</ol>
+<h3 id="3-webhook-url">步驟 3：設定 Webhook URL<a class="headerlink" href="#3-webhook-url" title="Permanent link">&para;</a></h3>
+<ol>
+<li>在 Messaging API 設定頁面</li>
+<li>開啟「Use Webhook」功能</li>
+<li>填入你的伺服器 Webhook URL：<code>https://your-domain.com/webhook</code></li>
+<li>點擊「Verify」確認連線</li>
+</ol>
+<h3 id="4-liff">步驟 4：申請 LIFF<a class="headerlink" href="#4-liff" title="Permanent link">&para;</a></h3>
+<ol>
+<li>在同一個 Channel 頁面</li>
+<li>進入「LIFF」標籤</li>
+<li>新增 LIFF App（每個功能一個 LIFF ID）</li>
+<li>設定：</li>
+<li>LIFF App 名稱（如「加入排隊」）</li>
+<li>URL：你的 LIFF 頁面網址</li>
+<li>Size：Full（佔滿整個畫面）或 Tall</li>
+<li>Scopes：<code>openid</code>, <code>profile</code></li>
+</ol>
+<h3 id="5-rich-menu">步驟 5：設定 RICH MENU（選單）<a class="headerlink" href="#5-rich-menu" title="Permanent link">&para;</a></h3>
+<ol>
+<li>在 LINE Official Account Manager</li>
+<li>建立 RICH MENU（最多 10 個）</li>
+<li>設定按鈕對應 LIFF URL 或 關鍵字</li>
+<li>建議選單：</li>
+<li>🔢 加入排隊（LIFF）</li>
+<li>📋 我的排隊（LIFF）</li>
+<li>📅 線上預約（LIFF）</li>
+<li>☎ 聯絡餐廳（電話）</li>
+</ol>
+<h3 id="6">步驟 6：設定自動回應訊息<a class="headerlink" href="#6" title="Permanent link">&para;</a></h3>
+<ol>
+<li>在 Messaging API 設定</li>
+<li>設定「Auto Reply」：針對關鍵字自動回覆</li>
+<li>設定「Greeting」：新朋友加入時的歡迎訊息</li>
+</ol>
+<h3 id="_5">申請前置準備<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LINE 帳號</td>
+<td>個人或公司 LINE 帳號</td>
+</tr>
+<tr>
+<td>電子郵件</td>
+<td>用於 LINE Developers 註冊</td>
+</tr>
+<tr>
+<td>網站/伺服器</td>
+<td>可設定 HTTPS 的公開網址（Webhook）</td>
+</tr>
+<tr>
+<td>隱私權政策頁面</td>
+<td>LINE 要求必須有公開的隱私權頁面</td>
+</tr>
+<tr>
+<td>服務條款頁面</td>
+<td>同上</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="mvp-8">七、預估 MVP 開發時程（8 週）<a class="headerlink" href="#mvp-8" title="Permanent link">&para;</a></h2>
+<h3 id="1-2">第一階段：基礎建設（第 1-2 週）<a class="headerlink" href="#1-2" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>任務</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>系統架構與技術選型確認</td>
+<td>決定技術棧、雲端平台</td>
+</tr>
+<tr>
+<td>LINE 官方帳號申請</td>
+<td>完成 Messaging API + LIFF 申請</td>
+</tr>
+<tr>
+<td>資料庫設計與建立</td>
+<td>PostgreSQL Schema 建立</td>
+</tr>
+<tr>
+<td>基礎 API 框架建立</td>
+<td>Node.js + Express 基礎架構</td>
+</tr>
+<tr>
+<td>LINE SDK 串接</td>
+<td>Webhook 接收基礎</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-4">第二階段：餐廳端功能（第 3-4 週）<a class="headerlink" href="#3-4" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>任務</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>餐廳管理後台登入系統</td>
+<td>驗證、餐廳設定</td>
+</tr>
+<tr>
+<td>排隊名單管理 UI</td>
+<td>即時顯示排隊名單</td>
+</tr>
+<tr>
+<td>叫號功能</td>
+<td>手動叫號、下一位按鈕</td>
+</tr>
+<tr>
+<td>基本資料設定</td>
+<td>座位數、等候上限等</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-6">第三階段：消費者端功能（第 5-6 週）<a class="headerlink" href="#5-6" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>任務</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LIFF 頁面 - 加入排隊</td>
+<td>表單填寫、確認</td>
+</tr>
+<tr>
+<td>LINE 推播通知</td>
+<td>叫號時通知消費者</td>
+</tr>
+<tr>
+<td>LIFF 頁面 - 查看排隊進度</td>
+<td>即時順位查詢</td>
+</tr>
+<tr>
+<td>取消排隊功能</td>
+<td>消費者可取消</td>
+</tr>
+</tbody>
+</table>
+<h3 id="7-8">第四階段：預約功能 + 優化（第 7-8 週）<a class="headerlink" href="#7-8" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>任務</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>線上預約系統</td>
+<td>日期/時間/人數選擇</td>
+</tr>
+<tr>
+<td>預約管理（餐廳端）</td>
+<td>查看/修改預約</td>
+</tr>
+<tr>
+<td>Flex Message 訊息模板設計</td>
+<td>提升 UI/UX</td>
+</tr>
+<tr>
+<td>系統測試與除錯</td>
+<td>整合測試、修正問題</td>
+</tr>
+<tr>
+<td>部署上線</td>
+<td>生產環境部署</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_6">階段時程圖<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>週  1    2    3    4    5    6    7    8
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>─┼───┼───┼───┼───┼───┼───┼───┼───┼──
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>基礎建設   ████████████
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>餐廳端功能      ████████████
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>消費者端功能            ████████████
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>預約+優化                      ████████████
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>                                              ████████ 上線
+</code></pre></div>
+<hr />
+<h2 id="_7">八、功能優先級分類<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<h3 id="must-have">Must Have（核心功能）<a class="headerlink" href="#must-have" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] LINE 官方帳號申請與基本設定</li>
+<li>[ ] Webhook 接收與回應</li>
+<li>[ ] LIFF 加入排隊頁面</li>
+<li>[ ] 餐廳端排隊名單管理</li>
+<li>[ ] 叫號功能 + LINE 推播</li>
+<li>[ ] 查看排隊進度（消費者）</li>
+<li>[ ] 取消排隊</li>
+</ul>
+<h3 id="should-have">Should Have（重要功能）<a class="headerlink" href="#should-have" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] 線上預約功能</li>
+<li>[ ] 排隊進度推播（主動通知）</li>
+<li>[ ] Flex Message 美化訊息格式</li>
+<li>[ ] 報表分析（來客數、等候時間）</li>
+<li>[ ] 消費者歷史記錄</li>
+</ul>
+<h3 id="nice-to-have">Nice to Have（加分功能）<a class="headerlink" href="#nice-to-have" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] 自動叫號排程</li>
+<li>[ ] 多店管理</li>
+<li>[ ] POS 系統串接</li>
+<li>[ ] 優惠券/集點功能</li>
+<li>[ ] 會員分級制度</li>
+</ul>
+<hr />
+<h2 id="_8">九、系統安全考量<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h2>
+<h3 id="91-line-channel-secret">9.1 LINE Channel Secret 保護<a class="headerlink" href="#91-line-channel-secret" title="Permanent link">&para;</a></h3>
+<ul>
+<li>儲存於環境變數或加密的 Secret Manager</li>
+<li>不暴露在 client-side 程式碼</li>
+</ul>
+<h3 id="92-liff">9.2 LIFF 安全性<a class="headerlink" href="#92-liff" title="Permanent link">&para;</a></h3>
+<ul>
+<li>使用 <code>liff.sendMessages()</code> 前需確認使用者已授權</li>
+<li>不儲存敏感的 LINE Access Token</li>
+</ul>
+<h3 id="93-webhook">9.3 Webhook 驗證<a class="headerlink" href="#93-webhook" title="Permanent link">&para;</a></h3>
+<ul>
+<li>啟用 LINE Webhook 簽章驗證（<code>X-LINE-Signature</code> header）</li>
+<li>驗證每個請求是否來自 LINE Platform</li>
+</ul>
+<h3 id="94">9.4 消費者資料保護<a class="headerlink" href="#94" title="Permanent link">&para;</a></h3>
+<ul>
+<li>遵循 LINE 隱私權規範</li>
+<li>設定隱私權政策頁面（LINE 官方帳號要求）</li>
+<li>最小化蒐集原則（僅蒐集必要資料）</li>
+</ul>
+<hr />
+<h2 id="phase-2">十、下一步（Phase 2）<a class="headerlink" href="#phase-2" title="Permanent link">&para;</a></h2>
+<p>Phase 1 完成後，預計進入以下項目：</p>
+<ol>
+<li><strong>LINE Login 整合</strong>：強化消費者身份驗證</li>
+<li><strong>自動叫號系統</strong>：根據平均用餐時長自動往前遞進</li>
+<li><strong>通知系統優化</strong>：過號提醒、排隊即將到時催單</li>
+<li><strong>餐廳管理後台強化</strong>：報表、數據分析</li>
+<li><strong>API 文件化</strong>：供後續擴展或第三方串接</li>
+</ol>
+<hr />
+<p><strong>文件結尾</strong></p>
+<p>本文件為 LINE 餐廳候補位系統的<strong>第一階段系統架構設計書</strong>，基於 LINE Messaging API 官方文件與業界實務經驗所撰寫。詳細的LINE API 文件請參考：
+- <a href="https://developers.line.biz/zh-hant/docs/messaging-api/">LINE Messaging API 官方文件</a>
+- <a href="https://developers.line.biz/zh-hant/docs/liff/">LINE LIFF 官方文件</a>
+- <a href="https://developers.line.biz/console/">LINE Developers Console</a></p>
+<hr />
+<p><em>小咪技術研發助理｜2026-05-13</em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "toc.integrate", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../../js/search_suggestions.js"></script>
+      
+    
+  </body>
+</html>
