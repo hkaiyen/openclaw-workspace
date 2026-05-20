@@ -1,6 +1,6 @@
-/* 小安研究團隊每日報告 - 自訂樣式 */
+/* 小安研究團隊每日報告 - 自訂樣式（手機版優化） */
 
-/* 使用 CSS 變數控制導航字體 */
+/* ===== 桌面版 ===== */
 :root {
   --md-typescale-base: 0.9rem !important;
   --md-content-font-size: 22px;
@@ -12,161 +12,109 @@ html, body {
   line-height: 1.8 !important;
 }
 
-/* 左側導航字體 - 縮小到 16px */
+/* 左側導航字體 */
 .md-nav {
-  font-size: 16px !important;
+  font-size: 14px !important;
 }
 
 .md-nav__link {
-  font-size: 16px !important;
-  padding: 4px 0 !important;
+  font-size: 14px !important;
+  padding: 3px 0 !important;
 }
 
 .md-nav__list {
-  font-size: 16px !important;
+  font-size: 14px !important;
 }
 
 .md-nav__item {
-  font-size: 16px !important;
+  font-size: 14px !important;
 }
 
-/* 導航層級 */
-.md-nav--primary .md-nav__link {
-  font-size: 16px !important;
-}
-
+.md-nav--primary .md-nav__link,
 .md-nav--primary .md-nav__list {
-  font-size: 16px !important;
+  font-size: 14px !important;
 }
 
-/* 主內容區域 */
 .md-content {
   font-size: 18px !important;
 }
 
-/* 標題大小 */
 .md-content h1 { font-size: 1.6em !important; }
 .md-content h2 { font-size: 1.4em !important; }
 .md-content h3 { font-size: 1.5em !important; }
 
-/* 報告連結 - 保持可讀性 */
-.md-content a {
-  font-size: 16px !important;
-}
-
-.md-content li {
-  font-size: 16px !important;
-  margin-bottom: 4px !important;
-}
-
-/* 報告下載連結 */
-.md-content a[href$=".docx"] {
-  font-size: 16px !important;
-  color: #1976D2 !important;
-}
-
-/* ========== 手機版導覽列優化 ========== */
-@media screen and (max-width: 76.1875em) {
-  /* 確保側邊欄可見 */
-  .md-sidebar--primary {
-    display: flex !important;
-    flex-direction: column !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-  }
-  
-  /* 確保導航列表可見 */
-  .md-nav--primary {
-    display: flex !important;
-    flex-direction: column !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-  }
-  
-  .md-nav--primary .md-nav__list {
-    display: flex !important;
-    flex-direction: column !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-  }
-  
-  /* 確保每個導航項目可見 */
-  .md-nav--primary .md-nav__item {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-  }
-  
-  .md-nav--primary .md-nav__link {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-  }
-  
-  /* 確保漢堡選單可用 */
-  .md-header__button--menu {
-    display: flex !important;
-    visibility: visible !important;
-  }
-}
-
-/* 手機 */
-@media screen and (max-width: 480px) {
-  html, body {
-    font-size: 16px !important;
-  }
-  .md-nav__link {
-    font-size: 14px !important;
-  }
-}
-
-/* ========== 響應式優化（新增）========== */
-
-/* 平板 */
+/* ===== 手機版（最大寬度 768px） ===== */
 @media screen and (max-width: 768px) {
   html, body {
-    font-size: 18px !important;
+    font-size: 16px !important;
+    line-height: 1.6 !important;
   }
+
+  /* 導航列字體縮小 */
+  .md-nav {
+    font-size: 13px !important;
+  }
+
+  .md-nav__link {
+    font-size: 13px !important;
+    padding: 2px 0 !important;
+  }
+
+  .md-nav__list,
+  .md-nav__item {
+    font-size: 13px !important;
+  }
+
+  /* 導航連結高度縮小，避免佔用過多空間 */
+  .md-nav__link {
+    line-height: 1.4 !important;
+  }
+
+  /* 頂部導覽列（tabs）字體縮小 */
+  .md-tabs__link {
+    font-size: 12px !important;
+    padding: 4px 6px !important;
+  }
+
+  /* 主內容區 */
   .md-content {
-    padding: 10px !important;
+    font-size: 15px !important;
+    padding: 8px !important;
   }
+
   .md-content h1 { font-size: 1.4em !important; }
-  .md-content h2 { font-size: 1.2em !important; }
+  .md-content h2 { font-size: 1.25em !important; }
+  .md-content h3 { font-size: 1.15em !important; }
+
+  /* 首页横幅区域 */
+  .md-hero {
+    padding: 16px 8px !important;
+  }
+
+  /* 減少每個區塊的間距 */
+  .md-typeset .md-button {
+    font-size: 12px !important;
+    padding: 4px 12px !important;
+  }
 }
 
-/* 鏈接樣式強化 */
-.md-content a {
-  word-break: break-word;
-  overflow-wrap: break-word;
-}
+/* ===== 超小手機（最大寬度 480px） ===== */
+@media screen and (max-width: 480px) {
+  html, body {
+    font-size: 14px !important;
+  }
 
-/* 報告列表更緊湊 */
-.md-content li {
-  padding: 2px 0 !important;
-}
+  .md-nav {
+    font-size: 12px !important;
+  }
 
-/* 滾動條美化 */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 3px;
-}
+  .md-tabs__link {
+    font-size: 11px !important;
+    padding: 3px 4px !important;
+  }
 
-/* 表格響應式 */
-.md-content table {
-  font-size: 15px !important;
-  overflow-x: auto !important;
-  display: block !important;
-}
-
-/* 圖片最大寬度 */
-.md-content img {
-  max-width: 100% !important;
-  height: auto !important;
+  .md-content {
+    font-size: 14px !important;
+    padding: 6px !important;
+  }
 }
