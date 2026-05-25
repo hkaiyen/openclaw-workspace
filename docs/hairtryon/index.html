@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HairTry-On | AI 髮型試戴</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+    <style>
+        :root{--primary:#8B5E3C;--primary-light:#A67C52;--secondary:#2C5F8A;--accent:#D4A574;--bg:#FAF8F5;--bg-dark:#1A1A2E;--text:#2D2D2D;--text-light:#6B6B6B;--white:#FFFFFF;--success:#4CAF50;--error:#E53935;--shadow:0 4px 20px rgba(0,0,0,0.08);--shadow-hover:0 8px 30px rgba(0,0,0,0.12);--radius:16px;--radius-sm:12px;--transition:0.3s cubic-bezier(0.4,0,0.2,1)}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+        header{position:fixed;top:0;left:0;right:0;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);z-index:1000;padding:1rem 2rem;box-shadow:var(--shadow)}
+        .header-inner{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+        .logo{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:600;color:var(--primary);text-decoration:none;display:flex;align-items:center;gap:0.5rem}
+        .logo svg{width:32px;height:32px}
+        nav{display:flex;gap:2rem;align-items:center}
+        nav a{text-decoration:none;color:var(--text);font-weight:500;transition:var(--transition)}
+        nav a:hover{color:var(--primary)}
+        .btn-nav{background:var(--primary);color:var(--white)!important;padding:0.5rem 1.25rem;border-radius:var(--radius-sm)}
+        .btn-nav:hover{background:var(--primary-light)}
+        .hero{padding:8rem 2rem 4rem;text-align:center;background:linear-gradient(135deg,var(--bg) 0%,#F5EDE4 100%)}
+        .hero h1{font-size:clamp(2.5rem,5vw,4rem);font-weight:700;margin-bottom:1rem;background:linear-gradient(135deg,var(--primary) 0%,var(--accent) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .hero p{font-size:1.25rem;color:var(--text-light);max-width:600px;margin:0 auto 2rem}
+        .hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+        .btn{display:inline-flex;align-items:center;gap:0.5rem;padding:0.875rem 1.75rem;border-radius:var(--radius-sm);font-weight:500;font-size:1rem;cursor:pointer;border:none;transition:var(--transition);text-decoration:none}
+        .btn-primary{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 100%);color:var(--white);box-shadow:0 4px 15px rgba(139,94,60,0.3)}
+        .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 25px rgba(139,94,60,0.4)}
+        .btn-secondary{background:var(--white);color:var(--primary);border:2px solid var(--primary)}
+        .btn-secondary:hover{background:var(--primary);color:var(--white)}
+        .btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+        .tryon-section{padding:4rem 2rem;max-width:1200px;margin:0 auto}
+        .section-title{text-align:center;margin-bottom:3rem}
+        .section-title h2{font-size:2rem;margin-bottom:0.5rem}
+        .section-title p{color:var(--text-light)}
+        .tryon-container{display:grid;grid-template-columns:1fr 1fr;gap:2rem;background:var(--white);border-radius:var(--radius);padding:2rem;box-shadow:var(--shadow)}
+        .upload-panel,.style-panel{display:flex;flex-direction:column;gap:1.5rem}
+        .upload-zone{border:2px dashed #DDD;border-radius:var(--radius);padding:3rem 2rem;text-align:center;transition:var(--transition);cursor:pointer;background:#FAFAFA;position:relative;min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+        .upload-zone.dragover{border-color:var(--primary);background:rgba(139,94,60,0.05)}
+        .upload-zone.has-image{border:none;padding:0}
+        .upload-icon{width:64px;height:64px;fill:var(--primary);margin-bottom:1rem;opacity:0.7}
+        .upload-zone h3{font-size:1.25rem;margin-bottom:0.5rem}
+        .upload-zone p{color:var(--text-light);font-size:0.9rem}
+        .upload-zone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer}
+        .preview-image{width:100%;height:300px;object-fit:contain;border-radius:var(--radius);background:#EEE}
+        .change-image-btn{position:absolute;bottom:1rem;right:1rem;background:rgba(0,0,0,0.7);color:white;border:none;padding:0.5rem 1rem;border-radius:var(--radius-sm);cursor:pointer;font-size:0.875rem}
+        .gender-toggle{display:flex;background:#F0F0F0;border-radius:var(--radius-sm);padding:4px;gap:4px}
+        .gender-btn{flex:1;padding:0.75rem;border:none;background:transparent;border-radius:10px;font-weight:500;cursor:pointer;transition:var(--transition);display:flex;align-items:center;justify-content:center;gap:0.5rem}
+        .gender-btn.active{background:var(--white);box-shadow:0 2px 8px rgba(0,0,0,0.1);color:var(--primary)}
+        .gender-btn svg{width:20px;height:20px}
+        .hairstyle-categories{display:flex;gap:0.5rem;flex-wrap:wrap}
+        .category-btn{padding:0.5rem 1rem;border:1px solid #DDD;background:var(--white);border-radius:20px;font-size:0.875rem;cursor:pointer;transition:var(--transition)}
+        .category-btn.active{background:var(--primary);color:var(--white);border-color:var(--primary)}
+        .hairstyle-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;max-height:250px;overflow-y:auto;padding:0.5rem}
+        .hairstyle-grid::-webkit-scrollbar{width:6px}
+        .hairstyle-grid::-webkit-scrollbar-track{background:#F0F0F0;border-radius:3px}
+        .hairstyle-grid::-webkit-scrollbar-thumb{background:#CCC;border-radius:3px}
+        .hairstyle-card{border:2px solid #EEE;border-radius:var(--radius-sm);overflow:hidden;cursor:pointer;transition:var(--transition);aspect-ratio:1;position:relative}
+        .hairstyle-card:hover{transform:scale(1.05);border-color:var(--primary)}
+        .hairstyle-card.selected{border-color:var(--primary);box-shadow:0 0 0 3px rgba(139,94,60,0.2)}
+        .hairstyle-card img{width:100%;height:100%;object-fit:cover}
+        .hairstyle-card .check-mark{position:absolute;top:0.5rem;right:0.5rem;width:24px;height:24px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;opacity:0;transition:var(--transition)}
+        .hairstyle-card.selected .check-mark{opacity:1}
+        .hairstyle-card .check-mark svg{width:14px;height:14px;fill:white}
+        .slider-group{display:flex;flex-direction:column;gap:1rem}
+        .slider-row{display:flex;align-items:center;gap:1rem}
+        .slider-label{min-width:60px;font-size:0.875rem;color:var(--text-light)}
+        .slider-container{flex:1;position:relative}
+        input[type="range"]{width:100%;height:6px;-webkit-appearance:none;background:#E0E0E0;border-radius:3px;outline:none}
+        input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;background:var(--white);border:3px solid var(--primary);border-radius:50%;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.15)}
+        .slider-value{min-width:40px;text-align:right;font-size:0.875rem;font-weight:500}
+        .color-picker{display:flex;gap:0.5rem;flex-wrap:wrap}
+        .color-swatch{width:32px;height:32px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:var(--transition)}
+        .color-swatch:hover{transform:scale(1.1)}
+        .color-swatch.selected{border-color:var(--text);box-shadow:0 0 0 2px var(--white)}
+        .generate-section{display:flex;gap:1rem;margin-top:1rem}
+        .generate-section .btn{flex:1}
+        .btn-fast{background:#F5F5F5;color:var(--text);border:1px solid #DDD}
+        .btn-fast:hover:not(:disabled){background:#E8E8E8}
+        .btn-hd{background:linear-gradient(135deg,var(--secondary) 0%,#1E4976 100%);color:var(--white)}
+        .btn-hd:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 6px 25px rgba(44,95,138,0.3)}
+        .credit-badge{background:rgba(255,255,255,0.2);padding:0.125rem 0.5rem;border-radius:10px;font-size:0.75rem}
+        .result-section{margin-top:3rem;text-align:center}
+        .result-container{display:none;grid-template-columns:1fr 1fr;gap:2rem;max-width:800px;margin:0 auto;background:var(--white);border-radius:var(--radius);padding:2rem;box-shadow:var(--shadow)}
+        .result-container.show{display:grid}
+        .result-box{text-align:center}
+        .result-box h4{margin-bottom:1rem;color:var(--text-light);font-size:0.9rem}
+        .result-box img{width:100%;max-width:300px;border-radius:var(--radius);box-shadow:var(--shadow)}
+        .compare-arrow{display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--primary)}
+        .pricing-section{padding:4rem 2rem;background:var(--bg-dark);color:var(--white)}
+        .pricing-section .section-title h2,.pricing-section .section-title p{color:var(--white)}
+        .pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2rem;max-width:1000px;margin:0 auto}
+        .pricing-card{background:var(--white);color:var(--text);border-radius:var(--radius);padding:2rem;text-align:center;position:relative;overflow:hidden}
+        .pricing-card.featured{border:3px solid var(--primary)}
+        .pricing-card.featured::before{content:'熱門';position:absolute;top:1rem;right:-2rem;background:var(--primary);color:var(--white);padding:0.25rem 2.5rem;font-size:0.75rem;transform:rotate(45deg)}
+        .pricing-card h3{font-size:1.25rem;margin-bottom:0.5rem}
+        .pricing-card .price{font-size:2.5rem;font-weight:700;color:var(--primary);margin-bottom:0.25rem}
+        .pricing-card .price span{font-size:1rem;font-weight:400;color:var(--text-light)}
+        .pricing-card .desc{color:var(--text-light);font-size:0.9rem;margin-bottom:1.5rem}
+        .pricing-features{list-style:none;text-align:left;margin-bottom:1.5rem}
+        .pricing-features li{padding:0.5rem 0;display:flex;align-items:center;gap:0.5rem;font-size:0.9rem}
+        .pricing-features li svg{width:18px;height:18px;flex-shrink:0}
+        .pricing-features li.check svg{fill:var(--success)}
+        .pricing-features li.cross svg{fill:var(--error)}
+        .pricing-features li.cross{color:var(--text-light);text-decoration:line-through}
+        footer{background:#111;color:#AAA;padding:3rem 2rem;text-align:center}
+        footer p{font-size:0.875rem}
+        .loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,0.9);display:none;align-items:center;justify-content:center;z-index:2000;flex-direction:column;gap:1.5rem}
+        .loading-overlay.show{display:flex}
+        .loading-spinner{width:60px;height:60px;border:4px solid #EEE;border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .loading-text{font-size:1.125rem;color:var(--text)}
+        @media(max-width:900px){.tryon-container{grid-template-columns:1fr}nav{display:none}.result-container{grid-template-columns:1fr}.compare-arrow{transform:rotate(90deg)}}
+        @media(max-width:600px){header{padding:1rem}.hero{padding:6rem 1rem 3rem}.tryon-section{padding:2rem 1rem}.tryon-container{padding:1.5rem}.hairstyle-grid{grid-template-columns:repeat(2,1fr)}.generate-section{flex-direction:column}}
+        .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--text);color:var(--white);padding:1rem 2rem;border-radius:var(--radius-sm);z-index:3000;opacity:0;transition:var(--transition)}
+        .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+        .toast.success{background:var(--success)}.toast.error{background:var(--error)}
+    </style>
+</head>
+<body>
+    <header><div class="header-inner"><a href="#" class="logo"><svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/><path d="M16 6c-3 0-5.5 4-5.5 10s2.5 10 5.5 10c1.5 0 2.5-1 3-2l-1-3c-.5.8-1.2 1.2-2 1.2-1.5 0-2.5-2.5-2.5-6s1-6 2.5-6c.8 0 1.5.4 2 1.2l1-3c-.5-1-1.5-2-3-2z" fill="currentColor"/></svg>HairTry-On</a><nav><a href="#tryon">髮型試戴</a><a href="#pricing">方案費用</a><a href="#" class="btn-nav">開始免費試用</a></nav></div></header>
+    <section class="hero"><h1>看見未來的你</h1><p>上傳自拍，AI 瞬間為你切換各種髮型。<br>長髮、短髮、瀏海、染髮，在剪髮前先看看自己的新造型！</p><div class="hero-btns"><a href="#tryon" class="btn btn-primary"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>上傳照片體驗</a><a href="#pricing" class="btn btn-secondary">查看方案</a></div></section>
+    <section class="tryon-section" id="tryon"><div class="section-title"><h2>✨ AI 髮型試戴</h2><p>選擇喜歡的髮型，AI 為你即時呈現效果</p></div><div class="tryon-container"><div class="upload-panel"><h3>📤 上傳你的照片</h3><div class="upload-zone" id="uploadZone"><div class="upload-content"><svg class="upload-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 16H6c-.55 0-1-.45-1-1V6c0-.55.45-1 1-1h12c.55 0 1 .45 1 1v12c0 .55-.45 1-1 1zm-4.44-6.19l-2.35 3.02-1.56-1.88c-.2-.25-.51-.35-.83-.26-.32.08-.53.36-.53.7v4.11c0 .55.45 1 1 1h3.56c.55 0 1-.45 1-1v-.72l1.86 2.24c.2.24.52.35.83.26.32-.08.53-.36.53-.7v-3.6l1.56 1.88c.2.25.51.35.83.26.32-.08.53-.36.53-.7v-.4c0-.55-.45-1-1-1h-6.59l2.35-3.02c.29-.37.07-.9-.4-.9h-.05c-.31 0-.57.19-.69.49z"/></svg><h3>拖放照片到此處</h3><p>或點擊選擇檔案（JPG/PNG，最大 10MB）</p><p style="margin-top:0.5rem;font-size:0.8rem;">建議：清晰的正面照效果最佳</p></div><input type="file" accept="image/*" id="fileInput"></div><div class="gender-toggle"><button class="gender-btn active" data-gender="female"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-2.5 0-4.5 2-4.5 4.5 0 3.5 4.5 8 4.5 8s4.5-4.5 4.5-8c0-2.5-2-4.5-4.5-4.5zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>女性</button><button class="gender-btn" data-gender="male"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-2.5 0-4.5 2-4.5 4.5 0 3.5 4.5 8 4.5 8s4.5-4.5 4.5-8c0-2.5-2-4.5-4.5-4.5zm0 6c-.8 0-1.5-.7-1.5-1.5S11.2 5 12 5s1.5.7 1.5 1.5S12.8 8 12 8z"/></svg>男性</button></div></div><div class="style-panel"><div><h3>💇‍♀️ 選擇髮型</h3><div class="hairstyle-categories" id="categories"></div></div><div class="hairstyle-grid" id="hairstyleGrid"></div><div class="slider-group"><h4>參數調整</h4><div class="slider-row"><span class="slider-label">捲度</span><div class="slider-container"><input type="range" min="1" max="10" value="5" id="curlSlider"></div><span class="slider-value" id="curlValue">5</span></div><div class="slider-row"><span class="slider-label">長度</span><div class="slider-container"><input type="range" min="1" max="10" value="5" id="lengthSlider"></div><span class="slider-value" id="lengthValue">5</span></div><div class="slider-row"><span class="slider-label">髮色</span><div class="color-picker" id="colorPicker"></div></div></div><div class="generate-section"><button class="btn btn-fast" id="generateFast" disabled>⚡ 快速預覽</button><button class="btn btn-hd" id="generateHD" disabled>✨ 高品質生成 <span class="credit-badge">1 點數</span></button></div></div></div><div class="result-section"><div class="result-container" id="resultContainer"><div class="result-box"><h4>原始照片</h4><img id="resultOriginal" src="" alt="原始照片"></div><div class="compare-arrow">→</div><div class="result-box"><h4>AI 髮型效果</h4><img id="resultImage" src="" alt="AI 髮型效果"></div></div></div></section>
+    <section class="pricing-section" id="pricing"><div class="section-title"><h2>💳 方案費用</h2><p>選擇適合你的方案，開啟無限髮型靈感</p></div><div class="pricing-grid"><div class="pricing-card"><h3>免費版</h3><div class="price">$0<span>/月</span></div><p class="desc">適合想要先體驗看看的你</p><ul class="pricing-features"><li class="check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>每日 3 次試戴</li><li class="check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>快速預覽模式</li><li class="cross"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>高品質生成</li><li class="cross"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>歷史記錄</li></ul><a href="#" class="btn btn-secondary" style="width:100%">免費試用</a></div><div class="pricing-card featured"><h3>專業版</h3><div class="price">$299<span>/月</span></div><p class="desc">適合沙龍設計師與重度使用者</p><ul class="pricing-features"><li class="check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>每日 50 次試戴</li><li class="check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>快速預覽模式</li><li class="check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>高品質生成</li><li class="check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>歷史記錄 & 分享</li></ul><a href="#" class="btn btn-primary" style="width:100%">立即升級</a></div><div class="pricing-card"><h3>企業版</h3><div class="price">來電<span>/月</span></div><p class="desc">適合連鎖沙龍與系統整合</p><ul class="pricing-features"><li class="check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>無限試戴次數</li><li class="check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>API 接口接入</li><li class="check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>品牌客製化</li><li class="check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>優先客服支援</li></ul><a href="#" class="btn btn-secondary" style="width:100%">聯絡我們</a></div></div></section>
+    <footer><p>© 2026 HairTry-On | AI 髮型試戴系統 | 讓美髮更簡單</p></footer>
+    <div class="loading-overlay" id="loadingOverlay"><div class="loading-spinner"></div><div class="loading-text" id="loadingText">AI 正在為你生成髮型...</div></div>
+    <div class="toast" id="toast"></div>
+    <script>
+        const hairstyles={female:[{id:'f-long',name:'長直髮',category:'long',image:'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=200&h=200&fit=crop'},{id:'f-long-wave',name:'長波浪',category:'long',image:'https://images.unsplash.com/photo-1519699047748-de8e3a400c0a?w=200&h=200&fit=crop'},{id:'f-short-bob',name:'短髮鮑伯',category:'short',image:'https://images.unsplash.com/photo-1605496668135-1f2c9b5e8d26?w=200&h=200&fit=crop'},{id:'f-short-layered',name:'層次短髮',category:'short',image:'https://images.unsplash.com/photo-1595880375282-7a3be9d5007e?w=200&h=200&fit=crop'},{id:'f-bangs-blunt',name:'妹妹頭瀏海',category:'bangs',image:'https://images.unsplash.com/photo-1552874869-5c39ec93ade5?w=200&h=200&fit=crop'},{id:'f-bangs-air',name:'空氣瀏海',category:'bangs',image:'https://images.unsplash.com/photo-1580618673191-1c4381e4f5b0?w=200&h=200&fit=crop'},{id:'f-perm-curly',name:'羊毛卷',category:'perm',image:'https://images.unsplash.com/photo-1562322140-8baeececf3df?w=200&h=200&fit=crop'},{id:'f-perm-cloud',name:'雲朵燙',category:'perm',image:'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=200&h=200&fit=crop'},{id:'f-color-brown',name:'棕色染髮',category:'color',image:'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop'},{id:'f-color-ash',name:'霧灰染髮',category:'color',image:'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=200&h=200&fit=crop'}],male:[{id:'m-short-fade',name:'漸層短髮',category:'short',image:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop'},{id:'m-short-texture',name:'纹理短髮',category:'short',image:'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop'},{id:'m-slick-back',name:'油頭',category:'slick',image:'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200&h=200&fit=crop'},{id:'m-pompadour',name:'龐巴度',category:'slick',image:'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=200&h=200&fit=crop'},{id:'m-curly',name:'捲髮造型',category:'curly',image:'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop'},{id:'m-undercut',name:'剉邊頭',category:'undercut',image:'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop'}]};
+        const categories={female:[{id:'long',name:'長髮'},{id:'short',name:'短髮'},{id:'bangs',name:'瀏海'},{id:'perm',name:'燙髮'},{id:'color',name:'染髮'}],male:[{id:'short',name:'短髮'},{id:'slick',name:'上梳'},{id:'curly',name:'捲髮'},{id:'undercut',name:'剉邊'}]};
+        const colors=[{id:'black',name:'黑色',hex:'#1A1A1A'},{id:'dark-brown',name:'深棕',hex:'#4A3728'},{id:'brown',name:'棕色',hex:'#8B6914'},{id:'honey',name:'蜂蜜色',hex:'#C4A35A'},{id:'ash',name:'霧灰',hex:'#7A7A7A'},{id:'red',name:'酒紅',hex:'#722F37'},{id:'blonde',name:'金色',hex:'#E6C229'},{id:'purple',name:'紫色',hex:'#6B3FA0'}];
+        let currentGender='female',currentCategory='long',selectedHairstyle=null,uploadedImage=null,selectedColor=colors[0];
+        const uploadZone=document.getElementById('uploadZone'),fileInput=document.getElementById('fileInput'),genderBtns=document.querySelectorAll('.gender-btn'),categoriesEl=document.getElementById('categories'),hairstyleGrid=document.getElementById('hairstyleGrid'),colorPicker=document.getElementById('colorPicker'),curlSlider=document.getElementById('curlSlider'),lengthSlider=document.getElementById('lengthSlider'),curlValue=document.getElementById('curlValue'),lengthValue=document.getElementById('lengthValue'),generateFast=document.getElementById('generateFast'),generateHD=document.getElementById('generateHD'),resultContainer=document.getElementById('resultContainer'),resultOriginal=document.getElementById('resultOriginal'),resultImage=document.getElementById('resultImage'),loadingOverlay=document.getElementById('loadingOverlay'),loadingText=document.getElementById('loadingText'),toast=document.getElementById('toast');
+        function showToast(m,t='info'){toast.textContent=m;toast.className='toast '+t+' show';setTimeout(()=>toast.classList.remove('show'),3000)}
+        function renderCategories(){categoriesEl.innerHTML=categories[currentGender].map(c=>`<button class="category-btn ${c.id===currentCategory?'active':''}" data-cat="${c.id}">${c.name}</button>`).join('');categoriesEl.querySelectorAll('.category-btn').forEach(b=>{b.addEventListener('click',()=>{currentCategory=b.dataset.cat;renderCategories();renderHairstyles()})})}
+        function renderHairstyles(){const styles=hairstyles[currentGender].filter(s=>s.category===currentCategory);hairstyleGrid.innerHTML=styles.map(s=>`<div class="hairstyle-card ${selectedHairstyle?.id===s.id?'selected':''}" data-id="${s.id}"><img src="${s.image}" alt="${s.name}" loading="lazy"><div class="check-mark"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div></div>`).join('');hairstyleGrid.querySelectorAll('.hairstyle-card').forEach(c=>{c.addEventListener('click',()=>{selectedHairstyle=styles.find(s=>s.id===c.dataset.id);renderHairstyles();checkGenerateBtn()})})}
+        function renderColors(){colorPicker.innerHTML=colors.map(c=>`<div class="color-swatch ${selectedColor.id===c.id?'selected':''}" style="background:${c.hex}" data-id="${c.id}" title="${c.name}"></div>`).join('');colorPicker.querySelectorAll('.color-swatch').forEach(s=>{s.addEventListener('click',()=>{selectedColor=colors.find(c=>c.id===s.dataset.id);renderColors()})})}
+        function checkGenerateBtn(){const canGenerate=uploadedImage&&selectedHairstyle;generateFast.disabled=!canGenerate;generateHD.disabled=!canGenerate}
+        function handleFileUpload(file){if(!file)return;if(!file.type.startsWith('image/')){showToast('請上傳圖片檔案','error');return}if(file.size>10*1024*1024){showToast('圖片大小不可超過 10MB','error');return}const reader=new FileReader();reader.onload=(e)=>{uploadedImage=e.target.result;uploadZone.classList.add('has-image');uploadZone.innerHTML=`<img src="${uploadedImage}" class="preview-image" alt="預覽"><button class="change-image-btn">更換照片</button>`;uploadZone.querySelector('.change-image-btn').addEventListener('click',(e)=>{e.stopPropagation();fileInput.click()});checkGenerateBtn();showToast('照片上傳成功！','success')};reader.readAsDataURL(file)}
+        function simulateAIGeneration(mode){loadingOverlay.classList.add('show');loadingText.textContent=mode==='fast'?'⚡ 快速生成中...':'✨ 高品質生成中...';setTimeout(()=>{loadingOverlay.classList.remove('show');const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d'),img=new Image();img.onload=()=>{canvas.width=img.width;canvas.height=img.height;ctx.drawImage(img,0,0);ctx.globalCompositeOperation='overlay';ctx.fillStyle=selectedColor.hex+'40';ctx.fillRect(0,0,canvas.width,canvas.height);resultOriginal.src=uploadedImage;resultImage.src=canvas.toDataURL();resultContainer.classList.add('show');resultContainer.scrollIntoView({behavior:'smooth',block:'center'});showToast(`${mode==='fast'?'⚡ 快速預覽':'✨ 高品質生成'}完成！`,'success')};img.src=uploadedImage},mode==='fast'?2000:4000)}
+        fileInput.addEventListener('change',(e)=>handleFileUpload(e.target.files[0]));uploadZone.addEventListener('dragover',(e)=>{e.preventDefault();uploadZone.classList.add('dragover')});uploadZone.addEventListener('dragleave',()=>uploadZone.classList.remove('dragover'));uploadZone.addEventListener('drop',(e)=>{e.preventDefault();uploadZone.classList.remove('dragover');handleFileUpload(e.dataTransfer.files[0])});genderBtns.forEach(btn=>{btn.addEventListener('click',()=>{genderBtns.forEach(b=>b.classList.remove('active'));btn.classList.add('active');currentGender=btn.dataset.gender;currentCategory=categories[currentGender][0].id;selectedHairstyle=null;renderCategories();renderHairstyles();checkGenerateBtn()})});curlSlider.addEventListener('input',()=>curlValue.textContent=curlSlider.value);lengthSlider.addEventListener('input',()=>lengthValue.textContent=lengthSlider.value);generateFast.addEventListener('click',()=>simulateAIGeneration('fast'));generateHD.addEventListener('click',()=>simulateAIGeneration('hd'));
+        renderCategories();renderHairstyles();renderColors();
+    </script>
+</body>
+</html>
